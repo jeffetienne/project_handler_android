@@ -30,6 +30,7 @@ import org.json.JSONObject;
 
 import android.os.Bundle;
 
+import java.io.Console;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,13 +44,14 @@ public class MainActivity extends AppCompatActivity {
     ProjetRecyclerViewAdapter projetRecyclerViewAdapter;
 
 
-    private final static String url = "http://localhost:26922/api/projet";
+    private final static String url = "http://192.168.0.165:26922/api/projet";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //nameTextView = (TextView) findViewById(R.id.nameTextView);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -57,19 +59,25 @@ public class MainActivity extends AppCompatActivity {
         Preferences preferences = new Preferences(MainActivity.this);
         String search = preferences.getSearch();
 
-        projetRecyclerViewAdapter = new ProjetRecyclerViewAdapter(this, getProjets());
+        ArrayList<Projet> projets = getProjets();
+
+        projets.size();
+        //nameTextView.setText(projets.size());
+
+        projetRecyclerViewAdapter = new ProjetRecyclerViewAdapter(this, projets);
         recyclerView.setAdapter(projetRecyclerViewAdapter);
         projetRecyclerViewAdapter.notifyDataSetChanged();
 
     }
 
-    public List<Projet> getProjets(){
+    public ArrayList<Projet> getProjets(){
         final ArrayList<Projet> projets = new ArrayList<Projet>();
         final RequestQueue queue = Volley.newRequestQueue(this);
         JsonArrayRequest arrayRequest = new JsonArrayRequest(url,
                 new Response.Listener<JSONArray>(){
                     @Override
                     public void onResponse(JSONArray response) {
+
                         for(int i = 0; i<response.length(); i++){
                             try
                             {
@@ -81,16 +89,17 @@ public class MainActivity extends AppCompatActivity {
                                 projet.setName(projetObject.getString("Name"));
                                 projet.setDescription(projetObject.getString("Description"));
                                 projet.setDomaineId(projetObject.getInt("DomaineId"));
-                                JSONObject domaineObject = (JSONObject) JSONObject.wrap(projetObject.getString("Domaine"));
-                                domaine.setName(domaineObject.getString("Name"));
+                                //JSONObject domaineObject = (JSONObject) JSONObject.wrap(projetObject.getString("Domaine"));
+                                //domaine.setName(domaineObject.getString("Name"));
                                 projet.setDomaine(domaine);
                                 projet.setCreePar(projetObject.getString("CreePar"));
                                 projet.setCreeLe(projetObject.getString("CreeLe"));
 
                                 projets.add(projet);
 
+                                //nameTextView.setText(projets.get(0).getName());
 
-                                Log.d("Items :", projet.getName());
+                                //Log.d("Items :", projet.getName());
                                 //nameTextView.setText(projet.getString("Name"));
                                 //descriptionTextView.setText(projet.getString("Description"));
 

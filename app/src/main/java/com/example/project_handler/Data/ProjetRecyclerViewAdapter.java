@@ -12,13 +12,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.project_handler.Model.Projet;
 import com.example.project_handler.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProjetRecyclerViewAdapter extends RecyclerView.Adapter<ProjetRecyclerViewAdapter.ViewHolder> {
     private Context context;
     private List<Projet> projets;
 
-    public ProjetRecyclerViewAdapter(Context context, List<Projet> projets) {
+    public ProjetRecyclerViewAdapter(Context context, ArrayList<Projet> projets) {
         this.context = context;
         this.projets = projets;
     }
@@ -36,7 +37,7 @@ public class ProjetRecyclerViewAdapter extends RecyclerView.Adapter<ProjetRecycl
 
         holder.Name.setText(projet.getName());
         holder.Description.setText(projet.getDescription());
-        holder.Domaine.setText(projet.getDomaine().getName());
+        //holder.Domaine.setText(projet.getDomaine().getName());
         holder.CreePar.setText(projet.getCreePar());
         holder.CreeLe.setText(projet.getCreeLe().toString());
     }
