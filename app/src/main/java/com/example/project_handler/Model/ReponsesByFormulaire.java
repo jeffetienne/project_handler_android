@@ -1,0 +1,103 @@
+package com.example.project_handler.Model;
+
+import java.util.Date;
+
+public class ReponsesByFormulaire {
+    private int Id;
+    private String Valeur;
+    private Question Question;
+    private int QuestionId;
+    private int ReferenceId;
+    private String Code;
+    private String Texte;
+    private String CreePar;
+    private Date CreeLe;
+
+    public ReponsesByFormulaire(int id,
+                                String valeur,
+                                Question question,
+                                int questionId,
+                                int referenceId,
+                                String code,
+                                String texte,
+                                String creePar,
+                                Date creeLe) {
+        Id = id;
+        Valeur = valeur;
+        Question = question;
+        QuestionId = questionId;
+        ReferenceId = referenceId;
+        Code = code;
+        Texte = texte;
+        CreePar = creePar;
+        CreeLe = creeLe;
+    }
+
+    public int getId() {
+        return Id;
+    }
+
+    public String getValeur() {
+        return Valeur;
+    }
+
+    public void setValeur(String valeur) {
+        Valeur = valeur;
+    }
+
+    public com.example.project_handler.Model.Question getQuestion() {
+        return Question;
+    }
+
+    public void setQuestion(com.example.project_handler.Model.Question question) {
+        Question = question;
+    }
+
+    public int getQuestionId() {
+        return QuestionId;
+    }
+
+    public void setQuestionId(int questionId) {
+        QuestionId = questionId;
+    }
+
+    public int getReferenceId() {
+        return ReferenceId;
+    }
+
+    public void setReferenceId(int referenceId) {
+        ReferenceId = referenceId;
+    }
+
+    public String getCode() {
+        return Code;
+    }
+
+    public void setCode(String code) {
+        Code = code;
+    }
+
+    public String getTexte() {
+        return Texte;
+    }
+
+    public void setTexte(String texte) {
+        Texte = texte;
+    }
+
+    public String getCreePar() {
+        return CreePar;
+    }
+
+    public void setCreePar(String creePar) {
+        CreePar = creePar;
+    }
+
+    public Date getCreeLe() {
+        return CreeLe;
+    }
+
+    public void setCreeLe(Date creeLe) {
+        CreeLe = creeLe;
+    }
+}
