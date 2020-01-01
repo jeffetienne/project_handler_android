@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <RelativeLayout
+            android:padding="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/projetImageId"
+                android:background="@android:color/background_dark"
+                android:layout_width="90dp"
+                android:layout_height="90dp"/>
+
+            <TextView
+                android:id="@+id/projetName"
+                android:paddingLeft="5dp"
+                android:layout_toRightOf="@id/projetImageId"
+                android:text="Projet Name"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/projetDescription"
+                android:paddingLeft="5dp"
+                android:layout_toRightOf="@id/projetImageId"
+                android:layout_below="@id/projetName"
+                android:text="Projet Description"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/projetDomaine"
+                android:paddingLeft="5dp"
+                android:layout_toRightOf="@id/projetImageId"
+                android:layout_below="@id/projetDescription"
+                android:text="Projet Domaine"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/projetCreePar"
+                android:paddingLeft="5dp"
+                android:layout_toRightOf="@id/projetImageId"
+                android:layout_below="@id/projetDomaine"
+                android:text="Projet Cree par"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/projetCreeLe"
+                android:paddingLeft="5dp"
+                android:layout_toRightOf="@id/projetImageId"
+                android:layout_below="@id/projetCreePar"
+                android:text="Projet Cree le"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+</LinearLayout>
