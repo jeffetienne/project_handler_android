@@ -10,9 +10,9 @@ public class Projet implements Serializable {
     private Domaine Domaine;
     private int DomaineId;
     private String CreePar;
-    private Date CreeLe;
+    private String CreeLe;
 
-    public Projet(int id, String name, String description, com.example.project_handler.Model.Domaine domaine, int domaineId, String creePar, Date creeLe) {
+    public Projet(int id, String name, String description, com.example.project_handler.Model.Domaine domaine, int domaineId, String creePar, String creeLe) {
         Id = id;
         Name = name;
         Description = description;
@@ -20,6 +20,10 @@ public class Projet implements Serializable {
         DomaineId = domaineId;
         CreePar = creePar;
         CreeLe = creeLe;
+    }
+
+    public Projet(){
+
     }
 
     public int getId() {
@@ -66,11 +70,11 @@ public class Projet implements Serializable {
         CreePar = creePar;
     }
 
-    public Date getCreeLe() {
+    public String getCreeLe() {
         return CreeLe;
     }
 
-    public void setCreeLe(Date creeLe) {
+    public void setCreeLe(String creeLe) {
         CreeLe = creeLe;
     }
 }

@@ -11,6 +11,10 @@ public class Domaine implements Serializable {
         Name = name;
     }
 
+    public Domaine() {
+
+    }
+
     public int getId() {
         return Id;
     }
