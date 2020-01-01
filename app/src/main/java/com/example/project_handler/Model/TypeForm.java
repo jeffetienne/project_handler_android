@@ -1,6 +1,8 @@
 package com.example.project_handler.Model;
 
-public class TypeForm {
+import java.io.Serializable;
+
+public class TypeForm implements Serializable {
     private int Id;
     private String Name;
 

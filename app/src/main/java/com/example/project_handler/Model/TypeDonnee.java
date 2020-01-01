@@ -1,6 +1,8 @@
 package com.example.project_handler.Model;
 
-public class TypeDonnee {
+import java.io.Serializable;
+
+public class TypeDonnee implements Serializable {
     private int Id;
     private String Name;
 

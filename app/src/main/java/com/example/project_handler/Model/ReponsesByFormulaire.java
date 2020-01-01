@@ -1,8 +1,9 @@
 package com.example.project_handler.Model;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class ReponsesByFormulaire {
+public class ReponsesByFormulaire implements Serializable {
     private int Id;
     private String Valeur;
     private Question Question;

@@ -1,6 +1,8 @@
 package com.example.project_handler.Model;
 
-public class Domaine {
+import java.io.Serializable;
+
+public class Domaine implements Serializable {
     private  int Id;
     private  String Name;
 

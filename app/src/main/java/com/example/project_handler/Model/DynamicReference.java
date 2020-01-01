@@ -1,8 +1,9 @@
 package com.example.project_handler.Model;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class DynamicReference {
+public class DynamicReference implements Serializable {
     private int Id;
     private String Code;
     private String Texte;

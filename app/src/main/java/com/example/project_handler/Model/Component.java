@@ -1,6 +1,8 @@
 package com.example.project_handler.Model;
 
-public class Component {
+import java.io.Serializable;
+
+public class Component implements Serializable {
     private int Id;
     private String Name;
 
