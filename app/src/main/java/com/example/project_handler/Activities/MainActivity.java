@@ -1,17 +1,16 @@
 package com.example.project_handler.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.util.Log;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Button;
-import android.view.View;
 
 import android.os.AsyncTask;
 
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -19,10 +18,11 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.project_handler.Data.ProjetRecyclerViewAdapter;
+import com.example.project_handler.Data.FormulaireViewAdapter;
 import com.example.project_handler.Model.Domaine;
+import com.example.project_handler.Model.Formulaire;
 import com.example.project_handler.Model.Projet;
 import com.example.project_handler.R;
-import com.example.project_handler.Utils.Preferences;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,28 +30,40 @@ import org.json.JSONObject;
 
 import android.os.Bundle;
 
-import java.io.Console;
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private Button callApiButton;
     private TextView nameTextView;
+    private TextView projetListTextView;
     private TextView descriptionTextView;
+    private TextView titreTextView;
+    private Context context;
 
     private RecyclerView recyclerView;
     ProjetRecyclerViewAdapter projetRecyclerViewAdapter;
 
+    ArrayList<Formulaire> liste = new ArrayList<Formulaire>();
+
+
 
     private final static String url = "http://192.168.0.165:26922/api/projet";
+    private final static String urlForm = "http://192.168.0.165:26922/api/formulaire";
+
+    final ArrayList<Formulaire> formulaires = new ArrayList<Formulaire>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        context = this;
         //nameTextView = (TextView) findViewById(R.id.nameTextView);
+        ///projetListTextView = (TextView) findViewById(R.id.projetListTextView);
+
+        /*
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -61,12 +73,17 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<Projet> projets = getProjets();
 
-        projets.size();
+
         //nameTextView.setText(projets.size());
+        //projetListTextView.setText("Liste des projets");
 
         projetRecyclerViewAdapter = new ProjetRecyclerViewAdapter(this, projets);
         recyclerView.setAdapter(projetRecyclerViewAdapter);
-        projetRecyclerViewAdapter.notifyDataSetChanged();
+        projetRecyclerViewAdapter.notifyDataSetChanged();*/
+
+
+        //new MyAsyncTask().execute(urlForm);
+        getFormulaires();
 
     }
 
@@ -121,10 +138,113 @@ public class MainActivity extends AppCompatActivity {
         return projets;
     }
 
+    public void getFormulaires(){
+        final ArrayList<Formulaire> formulaires = new ArrayList<Formulaire>();
+        final RequestQueue queue = Volley.newRequestQueue(this);
+        JsonArrayRequest arrayRequest = new JsonArrayRequest(urlForm,
+                new Response.Listener<JSONArray>(){
+                    @Override
+                    public void onResponse(JSONArray response) {
+
+                        for(int i = 0; i<response.length(); i++){
+                            try
+                            {
+                                JSONObject formulaireObject = response.getJSONObject(i);
+
+                                Formulaire formulaire = new Formulaire();
+                                Domaine domaine = new Domaine();
+
+                                formulaire.setId(formulaireObject.getInt("Id"));
+                                formulaire.setName(formulaireObject.getString("Name"));
+                                formulaire.setDescription(formulaireObject.getString("Description"));
+
+                                formulaires.add(formulaire);
+
+                                //nameTextView.setText(projets.get(0).getName());
+
+
+                                //nameTextView.setText(projet.getString("Name"));
+                                //descriptionTextView.setText(projet.getString("Description"));
+
+                            }
+                            catch (JSONException e)
+                            {
+                                e.printStackTrace();
+                                //nameTextView.setText(e.getMessage());
+                            }
+                        }
+
+                        titreTextView = (TextView) findViewById(R.id.titreTextView);
+                        titreTextView.setText("Liste des formulaires");
+                        ListView listView = (ListView) findViewById(R.id.formulaireListView);
+
+
+                        FormulaireViewAdapter adapter = new FormulaireViewAdapter(formulaires);
+                        listView.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
+                    }
+                }, new Response.ErrorListener(){
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("Error", error.getMessage());
+            }
+        });
+        queue.add(arrayRequest);
+    }
+
     class MyAsyncTask extends AsyncTask<String,Void,JSONObject> {
 
         @Override
         protected JSONObject doInBackground(String... urls) {
+            final RequestQueue queue = Volley.newRequestQueue(context);
+
+            JsonArrayRequest arrayRequest = new JsonArrayRequest(urls[0],
+                    new Response.Listener<JSONArray>(){
+                        @Override
+                        public void onResponse(JSONArray response) {
+                            //System.out.println("do in background");
+                            for(int i = 0; i<response.length(); i++){
+                                try
+                                {
+                                    JSONObject formulaireObject = response.getJSONObject(i);
+
+                                    Formulaire formulaire = new Formulaire();
+                                    Domaine domaine = new Domaine();
+
+                                    formulaire.setName(formulaireObject.getString("Name"));
+                                    formulaire.setDescription(formulaireObject.getString("Description"));
+
+                                    formulaires.add(formulaire);
+                                    System.out.println("ItemCount: " + formulaires.size());
+                                    //nameTextView.setText(projets.get(0).getName());
+
+
+                                    //nameTextView.setText(projet.getString("Name"));
+                                    //descriptionTextView.setText(projet.getString("Description"));
+
+                                }
+                                catch (JSONException e)
+                                {
+                                    e.printStackTrace();
+                                    //nameTextView.setText(e.getMessage());
+                                }
+                            }
+                            //System.out.println("ItemCount: " + formulaires.size());
+                            titreTextView = (TextView) findViewById(R.id.titreTextView);
+                            titreTextView.setText("Liste des formulaires");
+                            ListView listView = (ListView) findViewById(R.id.formulaireListView);
+
+
+                            FormulaireViewAdapter adapter = new FormulaireViewAdapter(formulaires);
+                            listView.setAdapter(adapter);
+                            adapter.notifyDataSetChanged();
+                        }
+                    }, new Response.ErrorListener(){
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    VolleyLog.d("Error", error.getMessage());
+                }
+            });
             return null;
         }
 
@@ -135,4 +255,6 @@ public class MainActivity extends AppCompatActivity {
             //descriptionTextView.setText(projet.getString("Description"));
         }
     }
+
+
 }

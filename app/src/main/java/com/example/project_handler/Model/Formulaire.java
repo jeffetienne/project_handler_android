@@ -34,8 +34,13 @@ public class Formulaire implements Serializable {
         CreeLe = creeLe;
     }
 
+    public Formulaire(){}
     public int getId() {
         return Id;
+    }
+
+    public void setId(int id) {
+        Id = id;
     }
 
     public String getName() {

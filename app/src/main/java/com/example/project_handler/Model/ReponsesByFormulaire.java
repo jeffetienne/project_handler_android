@@ -34,6 +34,8 @@ public class ReponsesByFormulaire implements Serializable {
         CreeLe = creeLe;
     }
 
+    public ReponsesByFormulaire(){}
+
     public int getId() {
         return Id;
     }

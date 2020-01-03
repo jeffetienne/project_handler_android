@@ -43,6 +43,11 @@ public class ProjetRecyclerViewAdapter extends RecyclerView.Adapter<ProjetRecycl
     }
 
     @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+    }
+
+    @Override
     public int getItemCount() {
         return this.projets.size();
     }

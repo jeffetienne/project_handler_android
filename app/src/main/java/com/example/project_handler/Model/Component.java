@@ -11,8 +11,14 @@ public class Component implements Serializable {
         Name = name;
     }
 
+    public Component(){}
+
     public int getId() {
         return Id;
+    }
+
+    public void setId(int id) {
+        Id = id;
     }
 
     public String getName() {

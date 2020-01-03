@@ -48,4 +48,118 @@ public class Question implements Serializable {
         CreePar = creePar;
         CreeLe = creeLe;
     }
+
+    public Question(){}
+
+    public int getId() {
+        return Id;
+    }
+
+    public void setId(int id) {
+        Id = id;
+    }
+
+    public String getName() {
+        return Name;
+    }
+
+    public void setName(String name) {
+        Name = name;
+    }
+
+    public String getMessage() {
+        return Message;
+    }
+
+    public void setMessage(String message) {
+        Message = message;
+    }
+
+    public com.example.project_handler.Model.Formulaire getFormulaire() {
+        return Formulaire;
+    }
+
+    public void setFormulaire(com.example.project_handler.Model.Formulaire formulaire) {
+        Formulaire = formulaire;
+    }
+
+    public int getFormulaireId() {
+        return FormulaireId;
+    }
+
+    public void setFormulaireId(int formulaireId) {
+        FormulaireId = formulaireId;
+    }
+
+    public com.example.project_handler.Model.Component getComponent() {
+        return Component;
+    }
+
+    public void setComponent(com.example.project_handler.Model.Component component) {
+        Component = component;
+    }
+
+    public int getComponentId() {
+        return ComponentId;
+    }
+
+    public void setComponentId(int componentId) {
+        ComponentId = componentId;
+    }
+
+    public com.example.project_handler.Model.TypeDonnee getTypeDonnee() {
+        return TypeDonnee;
+    }
+
+    public void setTypeDonnee(com.example.project_handler.Model.TypeDonnee typeDonnee) {
+        TypeDonnee = typeDonnee;
+    }
+
+    public int getTypeDonneeId() {
+        return TypeDonneeId;
+    }
+
+    public void setTypeDonneeId(int typeDonneeId) {
+        TypeDonneeId = typeDonneeId;
+    }
+
+    public int getMinimum() {
+        return Minimum;
+    }
+
+    public void setMinimum(int minimum) {
+        Minimum = minimum;
+    }
+
+    public int getMaximum() {
+        return Maximum;
+    }
+
+    public void setMaximum(int maximum) {
+        Maximum = maximum;
+    }
+
+    public Boolean getRequired() {
+        return Required;
+    }
+
+    public void setRequired(Boolean required) {
+        Required = required;
+    }
+
+    public String getCreePar() {
+        return CreePar;
+    }
+
+    public void setCreePar(String creePar) {
+        CreePar = creePar;
+    }
+
+    public Date getCreeLe() {
+        return CreeLe;
+    }
+
+    public void setCreeLe(Date creeLe) {
+        CreeLe = creeLe;
+    }
 }
