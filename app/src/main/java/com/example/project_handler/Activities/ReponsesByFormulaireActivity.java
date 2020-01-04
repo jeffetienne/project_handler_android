@@ -86,8 +86,7 @@ public class ReponsesByFormulaireActivity extends AppCompatActivity {
 
                                 JSONObject questionObject = response.getJSONObject(i).getJSONObject("Question");
 
-                                if(response.getJSONObject(0).getInt("QuestionId") == questionId)
-                                    nombreQuestions++;
+
                                 ReponsesByFormulaire reponse = new ReponsesByFormulaire();
                                 Question question = new Question();
                                 question.setId(questionObject.getInt("Id"));
@@ -116,7 +115,12 @@ public class ReponsesByFormulaireActivity extends AppCompatActivity {
                             }
                         }
 
-                        System.out.println("Nombre de reponses: " + reponsesByFormulaire.size());
+                        questionId = reponsesByFormulaire.get(0).getQuestionId();
+                        for(int compteur = 0; compteur < reponsesByFormulaire.size(); compteur++){
+                            if(reponsesByFormulaire.get(compteur).getQuestionId() == questionId)
+                                nombreQuestions++;
+                        }
+
                         int nbreQuestions = reponsesByFormulaire.size()/nombreQuestions;
 
                         for(int compteur = 0; compteur < reponsesByFormulaire.size(); compteur++){
@@ -129,9 +133,9 @@ public class ReponsesByFormulaireActivity extends AppCompatActivity {
                             }
                         }
 
+
                         ListView listView = (ListView) findViewById(R.id.reponsesListView);
 
-                        //ArrayList<ReponsesByFormulaire> reponsesByFormulaire = new ArrayList<ReponsesByFormulaire>();
                         ReponseViewAdapter adapter = new ReponseViewAdapter(keyValueReponses);
                         listView.setAdapter(adapter);
                         adapter.notifyDataSetChanged();

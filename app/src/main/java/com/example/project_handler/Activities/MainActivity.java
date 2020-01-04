@@ -4,8 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.util.Log;
 import android.widget.ListView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Button;
 
@@ -31,6 +34,7 @@ import org.json.JSONObject;
 import android.os.Bundle;
 
 import java.net.HttpURLConnection;
+import java.sql.Ref;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -41,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView descriptionTextView;
     private TextView titreTextView;
     private Context context;
+    private TableLayout tableLayout;
 
     private RecyclerView recyclerView;
     ProjetRecyclerViewAdapter projetRecyclerViewAdapter;
@@ -85,6 +90,8 @@ public class MainActivity extends AppCompatActivity {
         //new MyAsyncTask().execute(urlForm);
         getFormulaires();
 
+        //getProjets();
+
     }
 
     public ArrayList<Projet> getProjets(){
@@ -99,15 +106,17 @@ public class MainActivity extends AppCompatActivity {
                             try
                             {
                                 JSONObject projetObject = response.getJSONObject(i);
+                                JSONObject domaineObject = projetObject.getJSONObject("Domaine");
 
                                 Projet projet = new Projet();
                                 Domaine domaine = new Domaine();
 
+                                domaine.setId(domaineObject.getInt("Id"));
+                                domaine.setName(domaineObject.getString("Name"));
+
                                 projet.setName(projetObject.getString("Name"));
                                 projet.setDescription(projetObject.getString("Description"));
                                 projet.setDomaineId(projetObject.getInt("DomaineId"));
-                                //JSONObject domaineObject = (JSONObject) JSONObject.wrap(projetObject.getString("Domaine"));
-                                //domaine.setName(domaineObject.getString("Name"));
                                 projet.setDomaine(domaine);
                                 projet.setCreePar(projetObject.getString("CreePar"));
                                 projet.setCreeLe(projetObject.getString("CreeLe"));
@@ -126,6 +135,99 @@ public class MainActivity extends AppCompatActivity {
                                 e.printStackTrace();
                                 //nameTextView.setText(e.getMessage());
                             }
+                        }
+                        //tableLayout = findViewById(R.id.tableLayoutProjet);
+
+                        TableRow tableRow = new TableRow(context);
+                        tableRow.setLayoutParams(new TableRow.LayoutParams(
+                                TableRow.LayoutParams.FILL_PARENT,
+                                TableRow.LayoutParams.WRAP_CONTENT));
+
+                        TextView textViewName = new TextView(context);
+                        textViewName.setText("Name");
+                        textViewName.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+                        textViewName.setPadding(5, 5, 5, 0);
+                        textViewName.setTextSize(20);
+                        textViewName.setBackgroundResource(R.drawable.border);
+                        tableRow.addView(textViewName);
+
+                        TextView textViewDescription = new TextView(context);
+                        textViewDescription.setBackgroundResource(R.drawable.border);
+                        textViewDescription.setText("Description");
+                        textViewDescription.setTextSize(20);
+                        textViewDescription.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+                        textViewDescription.setPadding(5, 5, 5, 0);
+                        tableRow.addView(textViewDescription);
+
+                        TextView textViewDomaine = new TextView(context);
+                        textViewDomaine.setText("Domaine");
+                        textViewDomaine.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+                        textViewDomaine.setPadding(5, 5, 5, 0);
+                        textViewDomaine.setTextSize(20);
+                        textViewDomaine.setBackgroundResource(R.drawable.border);
+                        tableRow.addView(textViewDomaine);
+
+                        TextView textViewCreePar = new TextView(context);
+                        textViewCreePar.setText("Cree par");
+                        textViewCreePar.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+                        textViewCreePar.setPadding(5, 5, 5, 0);
+                        textViewCreePar.setTextSize(20);
+                        textViewCreePar.setBackgroundResource(R.drawable.border);
+                        tableRow.addView(textViewCreePar);
+
+                        TextView textViewCreeLe = new TextView(context);
+                        textViewCreeLe.setText("Cree le");
+                        textViewCreeLe.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+                        textViewCreeLe.setPadding(5, 5, 5, 0);
+                        textViewCreeLe.setTextSize(20);
+                        textViewCreeLe.setBackgroundResource(R.drawable.border);
+                        tableRow.addView(textViewCreeLe);
+
+                        //tableRow.setBackgroundResource(R.drawable.border);
+                        tableLayout.addView(tableRow, new TableLayout.LayoutParams(
+                                TableRow.LayoutParams.FILL_PARENT,
+                                TableRow.LayoutParams.WRAP_CONTENT));
+
+                        //tableLayout.setBackgroundResource(R.drawable.border);
+                        for (int compteur = 0; compteur < projets.size(); compteur++)
+                        {
+                            TableRow tableRow1 = new TableRow(context);
+
+                            TextView textViewName1 = new TextView(context);
+                            textViewName1.setText(projets.get(compteur).getName());
+                            textViewName1.setPadding(5, 5, 5, 0);
+                            textViewName1.setBackgroundResource(R.drawable.border);
+                            tableRow1.addView(textViewName1);
+
+                            TextView textViewDescription1 = new TextView(context);
+                            textViewDescription1.setText(projets.get(compteur).getDescription());
+                            textViewDescription1.setPadding(5, 5, 5, 0);
+                            textViewDescription1.setBackgroundResource(R.drawable.border);
+                            tableRow1.addView(textViewDescription1);
+
+                            TextView textViewDomaine1 = new TextView(context);
+                            textViewDomaine1.setText(projets.get(compteur).getDomaine().getName());
+                            textViewDomaine1.setPadding(5, 5, 5, 0);
+                            textViewDomaine1.setBackgroundResource(R.drawable.border);
+                            tableRow1.addView(textViewDomaine1);
+
+                            TextView textViewCreePar1 = new TextView(context);
+                            textViewCreePar1.setText(projets.get(compteur).getCreePar());
+                            textViewCreePar1.setPadding(5, 5, 5, 0);
+                            textViewCreePar1.setBackgroundResource(R.drawable.border);
+                            tableRow1.addView(textViewCreePar1);
+
+                            TextView textViewCreeLe1 = new TextView(context);
+                            textViewCreeLe1.setText(projets.get(compteur).getCreeLe());
+                            textViewCreeLe1.setPadding(5, 5, 5, 0);
+                            textViewCreeLe1.setBackgroundResource(R.drawable.border);
+                            tableRow1.addView(textViewCreeLe1);
+
+                            //tableRow1.setBackgroundResource(R.drawable.border);
+                            tableLayout.addView(tableRow1, new TableLayout.LayoutParams(
+                                    TableRow.LayoutParams.FILL_PARENT,
+                                    TableRow.LayoutParams.WRAP_CONTENT));
+
                         }
                     }
                 }, new Response.ErrorListener(){
@@ -150,13 +252,19 @@ public class MainActivity extends AppCompatActivity {
                             try
                             {
                                 JSONObject formulaireObject = response.getJSONObject(i);
+                                JSONObject projetObject = response.getJSONObject(i).getJSONObject("Projet");
 
                                 Formulaire formulaire = new Formulaire();
-                                Domaine domaine = new Domaine();
+                                Projet projet = new Projet();
+
+                                projet.setName(projetObject.getString("Name"));
 
                                 formulaire.setId(formulaireObject.getInt("Id"));
                                 formulaire.setName(formulaireObject.getString("Name"));
                                 formulaire.setDescription(formulaireObject.getString("Description"));
+                                formulaire.setProjet(projet);
+                                formulaire.setCreePar(formulaireObject.getString("CreePar"));
+                                //formulaire.setCreeLe(formulaireObject.getd("CreeLe"));
 
                                 formulaires.add(formulaire);
 
@@ -232,7 +340,7 @@ public class MainActivity extends AppCompatActivity {
                             //System.out.println("ItemCount: " + formulaires.size());
                             titreTextView = (TextView) findViewById(R.id.titreTextView);
                             titreTextView.setText("Liste des formulaires");
-                            ListView listView = (ListView) findViewById(R.id.formulaireListView);
+                            ListView listView = (ListView) findViewById(R.id.reponsesListView);
 
 
                             FormulaireViewAdapter adapter = new FormulaireViewAdapter(formulaires);

@@ -2,6 +2,7 @@ package com.example.project_handler.Data;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,26 +63,11 @@ public class ReponseViewAdapter extends BaseAdapter {
         final ReponsesByFormulaire reponse = listeReponses.get(i).get("Nom");
 
         LinearLayout m_layout = (LinearLayout)  formView.findViewById(R.id.reponseLinear);
-        LinearLayout container = new LinearLayout(viewGroup.getContext());
-        /*
-        Set set = listeReponses.get(i).entrySet();
-        Iterator iterator = set.iterator();
-        while(iterator.hasNext()) {
-            Map.Entry mentry = (Map.Entry)iterator.next();
-            Title = new TextView(formView.getContext());
-            Title.setText(mentry.getKey().toString());
-
-            Valeur = new TextView(formView.getContext());
-            Valeur.setText((ReponsesByFormulaire) mentry.getValue().toString());
-
-            m_layout.addView(Title);
-            m_layout.addView(Valeur);
-        }*/
 
 
         for(Map.Entry<String, ReponsesByFormulaire> entry: listeReponses.get(i).entrySet()) {
             Title = new TextView(formView.getContext());
-            Title.setText(entry.getKey());
+            Title.setText(entry.getKey() + "   : ");
             Title.setTextSize(20);
             Title.setTypeface(Title.getTypeface(), Typeface.BOLD);
 
@@ -92,12 +78,24 @@ public class ReponseViewAdapter extends BaseAdapter {
             if (entry.getValue().getQuestion().getComponentId() == 2 || entry.getValue().getQuestion().getComponentId() == 3)
                 Valeur.setText(entry.getValue().getTexte());
 
-            container.addView(Title);
-            container.addView(Valeur);
+            LinearLayout h_layout = new LinearLayout(viewGroup.getContext());
+            h_layout.setOrientation(LinearLayout.HORIZONTAL);
+
+
+            h_layout.addView(Title);
+            h_layout.addView(Valeur);
+            m_layout.addView(h_layout);
+        }
+
+        if(i%2 == 0) {
+            formView.setBackgroundColor(Color.rgb(200, 200, 200));
+        }
+        if(i%2 == 1) {
+            formView.setBackgroundColor(Color.rgb(240, 240, 240));
         }
 
 
-        m_layout.addView(container);
+
 
         return formView;
     }

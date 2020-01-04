@@ -28,8 +28,14 @@ public class DynamicReference implements Serializable {
         CreeLe = creeLe;
     }
 
+    public DynamicReference(){}
+
     public int getId() {
         return Id;
+    }
+
+    public void setId(int id) {
+        Id = id;
     }
 
     public String getCode() {

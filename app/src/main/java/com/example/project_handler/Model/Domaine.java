@@ -19,6 +19,10 @@ public class Domaine implements Serializable {
         return Id;
     }
 
+    public void setId(int id) {
+        Id = id;
+    }
+
     public String getName() {
         return Name;
     }
