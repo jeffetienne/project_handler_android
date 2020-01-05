@@ -34,4 +34,5 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     //noinspection GradleCompatible
     implementation 'com.android.support:recyclerview-v7:27.0.+'
+    implementation 'me.srodrigo:androidhintspinner:1.0.0'
 }

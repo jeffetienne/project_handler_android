@@ -4,9 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -15,11 +18,13 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.project_handler.Data.FormulaireViewAdapter;
 import com.example.project_handler.Model.Component;
@@ -34,7 +39,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
+import me.srodrigo.androidhintspinner.HintAdapter;
+import me.srodrigo.androidhintspinner.HintSpinner;
 
 public class ReponseFormActivity extends AppCompatActivity {
 
@@ -44,12 +58,17 @@ public class ReponseFormActivity extends AppCompatActivity {
     EditText editText;
     Spinner combobox;
     RadioGroup radioGroup;
-    RadioButton radioButton;
+    ArrayList<RadioButton> radioButtons;
+    ArrayList<CheckBox> checkBoxes;
     Button saveButton;
 
     String test;
     private final static String url = "http://192.168.0.165:26922/api/questionsbyformulaire";
     private final static String urlRef = "http://192.168.0.165:26922/api/dynamicreferencebyquestion";
+    private final static String urlRep = "http://192.168.0.165:26922/api/reponse";
+    String[] spinnerArray;
+    HashMap<String ,String> spinnerMap = new HashMap<String, String>();
+    ArrayList<DynamicReference> references = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +149,7 @@ public class ReponseFormActivity extends AppCompatActivity {
                             if(questions.get(compteur).getComponentId() == 1)
                             {
                                 editText = new EditText(context);
+                                editText.setId(compteur);
                                 editText.setHint(questions.get(compteur).getMessage());
                                 ReponseForm.addView(editText);
                             }
@@ -137,36 +157,153 @@ public class ReponseFormActivity extends AppCompatActivity {
                             if(questions.get(compteur).getComponentId() == 2)
                             {
                                 combobox = new Spinner(context);
-                                combobox.setPrompt(questions.get(compteur).getMessage());
+                                combobox.setId(compteur);
+
                                 ReponseForm.addView(combobox);
 
-                                getReferences(questions.get(compteur).getId() + "", combobox);
+                                getReferences(questions.get(compteur), combobox, radioGroup);
+                            }
+
+                            if(questions.get(compteur).getComponentId() == 3)
+                            {
+                                radioGroup = new RadioGroup(context);
+                                radioButtons = new ArrayList<RadioButton>();
+                                radioGroup.setId(compteur);
+                                radioGroup.setOrientation(LinearLayout.VERTICAL);
+
+                                TextView tv = new TextView(context);
+                                tv.setText(questions.get(compteur).getMessage());
+                                tv.setTypeface(tv.getTypeface(), Typeface.BOLD);
+                                tv.setTextSize(20);
+                                ReponseForm.addView(tv);
+                                getReferences(questions.get(compteur), combobox, radioGroup);
+
+                                ReponseForm.addView(radioGroup);
+                            }
+
+                            if(questions.get(compteur).getComponentId() == 4)
+                            {
+                                checkBoxes = new ArrayList<>();
+
+                                TextView tv = new TextView(context);
+                                tv.setText(questions.get(compteur).getMessage());
+                                tv.setTypeface(tv.getTypeface(), Typeface.BOLD);
+                                tv.setTextSize(20);
+                                ReponseForm.addView(tv);
+                                getReferences(questions.get(compteur), combobox, radioGroup);
                             }
                         }
                         saveButton = new Button(context);
                         saveButton.setText("Save");
                         saveButton.setBackgroundColor(Color.rgb(0, 123, 255));
                         saveButton.setTextColor(Color.WHITE);
+                        saveButton.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+                        saveButton.setTextSize(20);
                         saveButton.setPadding(0,20, 0, 0);
                         ReponseForm.addView(saveButton);
+
+                        saveButton.setOnClickListener(new View.OnClickListener() {
+
+                            @Override
+                            public void onClick(View view) {
+                                final RequestQueue queueRep = Volley.newRequestQueue(context);
+                                JSONObject reponseObject = new JSONObject();
+
+                                for (int compteur = 0; compteur < questions.size(); compteur++){
+                                    if(questions.get(compteur).getComponentId() == 1)
+                                    {
+                                        editText = (EditText) ReponseForm.findViewById(compteur);
+                                        try {
+                                            reponseObject.put("QuestionId", questions.get(compteur).getId());
+                                            reponseObject.put("Valeur", editText.getText());
+                                            reponseObject.put("CreePar", "Concepteur");
+                                            Date c = Calendar.getInstance().getTime();
+
+                                            SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+                                            String formattedDate = df.format(c);
+                                            reponseObject.put("CreeLe", formattedDate);
+                                            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, urlRep, reponseObject, new Response.Listener<JSONObject>() {
+                                                @Override
+                                                public void onResponse(JSONObject response) {
+                                                    System.out.println("Success");
+                                                }
+                                            }, new Response.ErrorListener() {
+                                                @Override
+                                                public void onErrorResponse(VolleyError error) {
+                                                    System.out.println("Erreur");
+                                                }
+                                            });
+                                            queueRep.add(request);
+                                        }catch (JSONException e){
+
+                                        }
+
+                                    }
+
+                                    if(questions.get(compteur).getComponentId() == 2)
+                                    {
+                                        combobox = (Spinner) ReponseForm.findViewById(compteur);
+                                        try {
+                                            String selectedText = combobox.getSelectedItem().toString();
+                                            String selectedValue = spinnerMap.get(selectedText);
+
+                                            reponseObject.put("QuestionId", questions.get(compteur).getId());
+                                            reponseObject.put("Valeur", selectedValue);
+                                            reponseObject.put("CreePar", "Concepteur");
+                                            Date c = Calendar.getInstance().getTime();
+
+                                            SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+                                            String formattedDate = df.format(c);
+                                            reponseObject.put("CreeLe", formattedDate);
+                                            JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, urlRep, reponseObject, new Response.Listener<JSONObject>() {
+                                                @Override
+                                                public void onResponse(JSONObject response) {
+                                                    finish();
+                                                }
+                                            }, new Response.ErrorListener() {
+                                                @Override
+                                                public void onErrorResponse(VolleyError error) {
+                                                    System.out.println("Erreur");
+                                                }
+                                            });
+                                            queueRep.add(request);
+                                        }catch (JSONException e){
+
+                                        }
+                                    }
+
+                                    if(questions.get(compteur).getComponentId() == 3){
+
+                                    }
+
+                                }
+                            }
+                        });
 
                     }
                 }, new Response.ErrorListener(){
             @Override
             public void onErrorResponse(VolleyError error) {
                 VolleyLog.d("Error", error.getMessage());
+                System.out.println("Erreur: " + error.getMessage());
             }
         });
         queue.add(arrayRequest);
     }
 
-    private void getReferences(final String idQuestion, final Spinner spinner){
-        final ArrayList<DynamicReference> references = new ArrayList<DynamicReference>();
+    private void getReferences(final Question question, final Spinner spinner, final RadioGroup radioGroup){
+
         final RequestQueue queue = Volley.newRequestQueue(this);
-        JsonArrayRequest arrayRequest = new JsonArrayRequest(urlRef + "/" + idQuestion,
+
+
+        JsonArrayRequest arrayRequest = new JsonArrayRequest(urlRef + "/" + question.getId(),
                 new Response.Listener<JSONArray>(){
                     @Override
                     public void onResponse(JSONArray response) {
+
+                        if(references == null)
+                            references = new ArrayList<DynamicReference>();
+                        else references.clear();
 
                         for(int i = 0; i<response.length(); i++){
                             try
@@ -209,14 +346,57 @@ public class ReponseFormActivity extends AppCompatActivity {
                                 //nameTextView.setText(e.getMessage());
                             }
                         }
-                        ArrayList<String> liste = new ArrayList<String>();
-                        for (int i = 0; i < references.size(); i++){
-                            liste.add(references.get(i).getTexte());
+
+                        if(question.getComponentId() == 2){
+                            ArrayList<String> liste = new ArrayList<String>();
+                            for (int i = 0; i < references.size(); i++){
+                                liste.add(references.get(i).getTexte());
+                            }
+
+                            ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(context,
+                                    android.R.layout.simple_spinner_item, liste);
+                            dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                            spinnerArray = new String[references.size()];
+                            for (int i = 0; i < references.size(); i++)
+                            {
+                                spinnerMap.put(references.get(i).getTexte(), references.get(i).getCode());
+                                spinnerArray[i] = references.get(i).getTexte();
+                            }
+                            HintSpinner<String> hintSpinner = new HintSpinner<>(
+                                    spinner,
+                                    // Default layout - You don't need to pass in any layout id, just your hint text and
+                                    // your list data
+                                    new HintAdapter<String>(context, question.getMessage(), Arrays.asList(spinnerArray)),
+                                    new HintSpinner.Callback<String>() {
+                                        @Override
+                                        public void onItemSelected(int position, String itemAtPosition) {
+                                            // Here you handle the on item selected event (this skips the hint selected event)
+                                        }
+                                    });
+                            hintSpinner.init();
                         }
-                        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(context,
-                                android.R.layout.simple_spinner_item, liste);
-                        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                        spinner.setAdapter(dataAdapter);
+
+                        if(question.getComponentId() == 3){
+                            for (int i = 0; i < references.size(); i++)
+                            {
+                                RadioButton radioButton = new RadioButton(context);
+                                radioButton.setText(references.get(i).getTexte());
+                                radioGroup.addView(radioButton);
+                            }
+                        }
+
+                        if(question.getComponentId() == 4){
+                            for (int i = 0; i < references.size(); i++)
+                            {
+                                CheckBox checkBox = new CheckBox(context);
+                                checkBox.setText(references.get(i).getTexte());
+                                ReponseForm.addView(checkBox);
+                            }
+                        }
+
+
+
 
                     }
                 }, new Response.ErrorListener(){
@@ -226,5 +406,6 @@ public class ReponseFormActivity extends AppCompatActivity {
             }
         });
         queue.add(arrayRequest);
+
     }
 }

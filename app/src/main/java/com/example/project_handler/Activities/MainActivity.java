@@ -295,6 +295,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 VolleyLog.d("Error", error.getMessage());
+                System.out.println("Erreur formulaire: " + error);
             }
         });
         queue.add(arrayRequest);

@@ -49,7 +49,7 @@ public class ReponseViewAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int i) {
-        return listeReponses.get(i).get("").getId();
+        return i;
     }
 
     @Override
