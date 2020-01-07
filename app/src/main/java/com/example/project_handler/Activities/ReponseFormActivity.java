@@ -26,12 +26,14 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.project_handler.Data.DatabaseHandler;
 import com.example.project_handler.Data.FormulaireViewAdapter;
 import com.example.project_handler.Model.Component;
 import com.example.project_handler.Model.Domaine;
 import com.example.project_handler.Model.DynamicReference;
 import com.example.project_handler.Model.Formulaire;
 import com.example.project_handler.Model.Question;
+import com.example.project_handler.Model.ReponsesByFormulaire;
 import com.example.project_handler.Model.TypeDonnee;
 import com.example.project_handler.R;
 
@@ -69,6 +71,7 @@ public class ReponseFormActivity extends AppCompatActivity {
     String[] spinnerArray;
     HashMap<String ,String> spinnerMap = new HashMap<String, String>();
     ArrayList<DynamicReference> references = null;
+    DatabaseHandler databaseHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +84,8 @@ public class ReponseFormActivity extends AppCompatActivity {
 
         context = this;
         ReponseForm = (LinearLayout) findViewById(R.id.reponseFormLinearLayout);
+
+        databaseHandler = new DatabaseHandler(this);
         getQuestions(formulaire.getId() + "");
     }
 
@@ -192,6 +197,8 @@ public class ReponseFormActivity extends AppCompatActivity {
                                 ReponseForm.addView(tv);
                                 getReferences(questions.get(compteur), combobox, radioGroup);
                             }
+
+                            databaseHandler.addQuestion(questions.get(compteur));
                         }
                         saveButton = new Button(context);
                         saveButton.setText("Save");
@@ -206,6 +213,46 @@ public class ReponseFormActivity extends AppCompatActivity {
 
                             @Override
                             public void onClick(View view) {
+
+                                for (int compteur = 0; compteur < questions.size(); compteur++){
+                                    ReponsesByFormulaire reponsesByFormulaire = new ReponsesByFormulaire();
+                                    reponsesByFormulaire.setQuestionId(questions.get(compteur).getId());
+                                    reponsesByFormulaire.setCreePar("Concepteur");
+
+                                    Date c = Calendar.getInstance().getTime();
+
+                                    reponsesByFormulaire.setCreeLe(c);
+                                    if(questions.get(compteur).getComponentId() == 1) {
+
+                                        editText = (EditText) ReponseForm.findViewById(compteur);
+                                        reponsesByFormulaire.setValeur(editText.getText().toString());
+                                    }
+
+                                    if(questions.get(compteur).getComponentId() == 2)
+                                    {
+                                        combobox = (Spinner) ReponseForm.findViewById(compteur);
+                                        String selectedText = combobox.getSelectedItem().toString();
+                                        String selectedValue = spinnerMap.get(selectedText);
+                                        reponsesByFormulaire.setValeur(selectedValue);
+                                    }
+
+                                    if(questions.get(compteur).getComponentId() == 3){
+
+                                    }
+
+                                    databaseHandler.addReponseByFormulaire(reponsesByFormulaire, questions.get(compteur).getFormulaireId() + "");
+
+                                }
+
+
+                                ArrayList<ReponsesByFormulaire> reponsesByFormulaires;
+
+                                reponsesByFormulaires = databaseHandler.getReponseByFormulaires(idForm);
+
+                                for (int i = 0; i < reponsesByFormulaires.size(); i++){
+                                    System.out.println("VAleur: " + reponsesByFormulaires.get(i).getValeur());
+                                }
+                                /*
                                 final RequestQueue queueRep = Volley.newRequestQueue(context);
                                 JSONObject reponseObject = new JSONObject();
 
@@ -276,7 +323,7 @@ public class ReponseFormActivity extends AppCompatActivity {
 
                                     }
 
-                                }
+                                }*/
                             }
                         });
 

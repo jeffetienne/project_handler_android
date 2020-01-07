@@ -49,6 +49,30 @@ public class Question implements Serializable {
         CreeLe = creeLe;
     }
 
+    public Question(int id,
+                    String name,
+                    String message,
+                    int formulaireId,
+                    int componentId,
+                    int typeDonneeId,
+                    int minimum,
+                    int maximum,
+                    Boolean required,
+                    String creePar,
+                    Date creeLe) {
+        Id = id;
+        Name = name;
+        Message = message;
+        FormulaireId = formulaireId;
+        ComponentId = componentId;
+        TypeDonneeId = typeDonneeId;
+        Minimum = minimum;
+        Maximum = maximum;
+        Required = required;
+        CreePar = creePar;
+        CreeLe = creeLe;
+    }
+
     public Question(){}
 
     public int getId() {

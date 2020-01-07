@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.project_handler.Activities.MainActivity;
 import com.example.project_handler.Activities.ReponseFormActivity;
 import com.example.project_handler.Activities.ReponsesByFormulaireActivity;
+import com.example.project_handler.Activities.ReponsesInDbActivity;
 import com.example.project_handler.Model.Formulaire;
 import com.example.project_handler.R;
 
@@ -103,7 +104,10 @@ public class FormulaireViewAdapter extends BaseAdapter {
         questions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                System.out.println("questions of " + formulaire.getName());
+                Intent intent = new Intent(viewGroup.getContext(), ReponsesInDbActivity.class);
+
+                intent.putExtra("formulaire", formulaire);
+                viewGroup.getContext().startActivity(intent);
             }
         });
 

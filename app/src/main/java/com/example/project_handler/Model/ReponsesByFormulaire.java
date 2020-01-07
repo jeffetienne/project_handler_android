@@ -16,7 +16,6 @@ public class ReponsesByFormulaire implements Serializable {
 
     public ReponsesByFormulaire(int id,
                                 String valeur,
-                                Question question,
                                 int questionId,
                                 int referenceId,
                                 String code,
@@ -25,7 +24,6 @@ public class ReponsesByFormulaire implements Serializable {
                                 Date creeLe) {
         Id = id;
         Valeur = valeur;
-        Question = question;
         QuestionId = questionId;
         ReferenceId = referenceId;
         Code = code;

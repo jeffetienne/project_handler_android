@@ -20,6 +20,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.project_handler.Data.DatabaseHandler;
 import com.example.project_handler.Data.ProjetRecyclerViewAdapter;
 import com.example.project_handler.Data.FormulaireViewAdapter;
 import com.example.project_handler.Model.Domaine;
@@ -59,12 +60,16 @@ public class MainActivity extends AppCompatActivity {
 
     final ArrayList<Formulaire> formulaires = new ArrayList<Formulaire>();
 
+    DatabaseHandler databaseHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         context = this;
+        databaseHandler = new DatabaseHandler(this);
+        //databaseHandler.delete();
         //nameTextView = (TextView) findViewById(R.id.nameTextView);
         ///projetListTextView = (TextView) findViewById(R.id.projetListTextView);
 

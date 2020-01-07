@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Pair;
@@ -16,6 +17,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.project_handler.Data.DatabaseHandler;
 import com.example.project_handler.Data.FormulaireViewAdapter;
 import com.example.project_handler.Data.ReponseViewAdapter;
 import com.example.project_handler.Model.Domaine;
@@ -28,8 +30,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
 import java.text.Normalizer;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 public class ReponsesByFormulaireActivity extends AppCompatActivity {
@@ -40,6 +45,8 @@ public class ReponsesByFormulaireActivity extends AppCompatActivity {
     HashMap<String, ReponsesByFormulaire> keyValueRep = new HashMap<String, ReponsesByFormulaire>();
     HashMap<String, String> keyValueRepHeader = new HashMap<String, String>();
     ArrayList<HashMap<String, ReponsesByFormulaire>> keyValueReponses = new ArrayList<HashMap<String, ReponsesByFormulaire>>();
+    Context context;
+    DatabaseHandler databaseHandler;
 
 
     @Override
@@ -47,12 +54,15 @@ public class ReponsesByFormulaireActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reponses_by_formulaire);
 
+        context = this;
 
         ConstraintLayout m_layout = (ConstraintLayout) findViewById(R.id.testLayout);
 
         Formulaire formulaire = (Formulaire) getIntent().getSerializableExtra("formulaire");
         titreFormTextView = (TextView) findViewById(R.id.titreFormTextView);
         titreFormTextView.setText("Reponses du formulaire " + formulaire.getId() + " - " + formulaire.getName());
+
+        databaseHandler = new DatabaseHandler(this);
 
         //TextView tv = new TextView(this);
         //tv.setText("Add view dynamically");
@@ -62,7 +72,7 @@ public class ReponsesByFormulaireActivity extends AppCompatActivity {
         getReponsesByFormulaire(formulaire.getId() + "");
     }
 
-    public void getReponsesByFormulaire(String idForm){
+    public void getReponsesByFormulaire(final String idForm){
         final ArrayList<ReponsesByFormulaire> reponsesByFormulaire = new ArrayList<ReponsesByFormulaire>();
         RequestQueue queue = Volley.newRequestQueue(this);
 
@@ -79,6 +89,7 @@ public class ReponsesByFormulaireActivity extends AppCompatActivity {
                         }
 
                         int nombreQuestions = 0;
+
                         for(int i = 0; i<response.length(); i++){
                             try
                             {
@@ -92,14 +103,34 @@ public class ReponsesByFormulaireActivity extends AppCompatActivity {
                                 question.setId(questionObject.getInt("Id"));
                                 question.setName(questionObject.getString("Name"));
                                 question.setComponentId(questionObject.getInt("ComponentId"));
+                                Date date = new Date();
+                                DateFormat formatter=new SimpleDateFormat("yyyyMMdd HH:mm:ss");
+                                try {
+                                    date = formatter.parse(questionObject.getString("CreeLe"));
+                                }catch (Exception e){
+                                    System.out.println(e.getMessage());
+                                }
+                                question.setCreeLe(date);
 
                                 //reponse.setId(reponseObject.getInt("Id"));
                                 reponse.setQuestionId(reponseObject.getInt("QuestionId"));
                                 reponse.setValeur(reponseObject.getString("Valeur"));
                                 reponse.setQuestion(question);
                                 reponse.setTexte(reponseObject.getString("Texte"));
+                                reponse.setCode(reponseObject.getString("Code"));
+                                reponse.setCreePar(reponseObject.getString("CreePar"));
 
-                                reponsesByFormulaire.add(reponse);
+                                try {
+                                    date = formatter.parse(reponseObject.getString("CreeLe"));
+                                }catch (Exception e){
+                                    System.out.println(e.getMessage());
+                                }
+                                reponse.setCreeLe(date);
+
+                                databaseHandler.addQuestion(question);
+                                databaseHandler.addReponseByFormulaire(reponse, idForm);
+
+                                //reponsesByFormulaire.add(reponse);
 
                                 //nameTextView.setText(projets.get(0).getName());
 
@@ -114,6 +145,9 @@ public class ReponsesByFormulaireActivity extends AppCompatActivity {
                                 //nameTextView.setText(e.getMessage());
                             }
                         }
+
+
+
 
                         questionId = reponsesByFormulaire.get(0).getQuestionId();
                         for(int compteur = 0; compteur < reponsesByFormulaire.size(); compteur++){
