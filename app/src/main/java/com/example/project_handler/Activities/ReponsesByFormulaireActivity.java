@@ -23,8 +23,10 @@ import com.example.project_handler.Data.ReponseViewAdapter;
 import com.example.project_handler.Model.Domaine;
 import com.example.project_handler.Model.Formulaire;
 import com.example.project_handler.Model.Question;
+import com.example.project_handler.Model.ReponseByFormulaireInDb;
 import com.example.project_handler.Model.ReponsesByFormulaire;
 import com.example.project_handler.R;
+import com.example.project_handler.Utils.Constants;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,7 +43,6 @@ public class ReponsesByFormulaireActivity extends AppCompatActivity {
 
     TextView titreFormTextView;
 
-    private final static String urlForm = "http://192.168.0.165:26922/api/reponsesbyformulaire";
     HashMap<String, ReponsesByFormulaire> keyValueRep = new HashMap<String, ReponsesByFormulaire>();
     HashMap<String, String> keyValueRepHeader = new HashMap<String, String>();
     ArrayList<HashMap<String, ReponsesByFormulaire>> keyValueReponses = new ArrayList<HashMap<String, ReponsesByFormulaire>>();
@@ -76,11 +77,16 @@ public class ReponsesByFormulaireActivity extends AppCompatActivity {
         final ArrayList<ReponsesByFormulaire> reponsesByFormulaire = new ArrayList<ReponsesByFormulaire>();
         RequestQueue queue = Volley.newRequestQueue(this);
 
-        JsonArrayRequest arrayRequest = new JsonArrayRequest(urlForm + "/" + idForm,
+        JsonArrayRequest arrayRequest = new JsonArrayRequest(Constants.URL_REPONSE_FORM + "/" + idForm,
                 new Response.Listener<JSONArray>(){
                     @Override
                     public void onResponse(JSONArray response) {
 
+                        if (response.length() <= 0) {
+                            Formulaire formulaire = (Formulaire) getIntent().getSerializableExtra("formulaire");
+                            titreFormTextView.setText("Aucune saisie sur le server pour le formulaire " + formulaire.getName());
+                            return;
+                        }
                         int questionId = 0;
                         try {
                             questionId = response.getJSONObject(0).getInt("QuestionId");
@@ -99,6 +105,7 @@ public class ReponsesByFormulaireActivity extends AppCompatActivity {
 
 
                                 ReponsesByFormulaire reponse = new ReponsesByFormulaire();
+                                ReponseByFormulaireInDb reponseByFormulaireInDb = new ReponseByFormulaireInDb();
                                 Question question = new Question();
                                 question.setId(questionObject.getInt("Id"));
                                 question.setName(questionObject.getString("Name"));
@@ -127,10 +134,25 @@ public class ReponsesByFormulaireActivity extends AppCompatActivity {
                                 }
                                 reponse.setCreeLe(date);
 
-                                databaseHandler.addQuestion(question);
-                                databaseHandler.addReponseByFormulaire(reponse, idForm);
+                                reponseByFormulaireInDb.setQuestionId(reponseObject.getInt("QuestionId"));
+                                reponseByFormulaireInDb.setValeur(reponseObject.getString("Valeur"));
+                                reponseByFormulaireInDb.setQuestionId(question.getId());
+                                reponseByFormulaireInDb.setQuestionName(question.getName());
+                                reponseByFormulaireInDb.setQuestionDescription(question.getMessage());
+                                reponseByFormulaireInDb.setTexte(reponseObject.getString("Texte"));
+                                reponseByFormulaireInDb.setCode(reponseObject.getString("Code"));
+                                reponseByFormulaireInDb.setCreePar(reponseObject.getString("CreePar"));
+                                reponseByFormulaireInDb.setCreeLe(date);
 
-                                //reponsesByFormulaire.add(reponse);
+                                reponseByFormulaireInDb.setComponentId(question.getComponentId());
+
+
+
+                                //databaseHandler.getReponseByFormulaires(question.getFormulaireId() + "");
+                                //databaseHandler.addQuestion(question);
+                                //databaseHandler.addReponseByFormulaire(reponseByFormulaireInDb, idForm);
+
+                                reponsesByFormulaire.add(reponse);
 
                                 //nameTextView.setText(projets.get(0).getName());
 
@@ -153,6 +175,9 @@ public class ReponsesByFormulaireActivity extends AppCompatActivity {
                         for(int compteur = 0; compteur < reponsesByFormulaire.size(); compteur++){
                             if(reponsesByFormulaire.get(compteur).getQuestionId() == questionId)
                                 nombreQuestions++;
+
+                            //System.out.println("Valeur : " + reponsesByFormulaire.get(compteur).getValeur() + ", QuestionName : " + reponsesByFormulaire.get(compteur).getQuestion().getName());
+
                         }
 
                         int nbreQuestions = reponsesByFormulaire.size()/nombreQuestions;

@@ -1,7 +1,12 @@
 package com.example.project_handler.Utils;
 
 public class Constants {
-    public static final String url = "http://localhost:26922/api/projet";
+    public static final String URL_PROJET = "http://localhost:26922/api/projet";
+    public final static String URL_REPONSE = "http://192.168.0.165:26922/api/reponse";
+    public final static String URL_FORMULAIRE = "http://192.168.0.165:26922/api/formulaire";
+    public final static String URL_QUESTION = "http://192.168.0.165:26922/api/questionsbyformulaire";
+    public final static String URL_REFERENCE = "http://192.168.0.165:26922/api/dynamicreferencebyquestion";
+    public final static String URL_REPONSE_FORM = "http://192.168.0.165:26922/api/reponsesbyformulaire";
 
     public static final int DATABASE_VERSION = 1;
     public static String DATABASE_NAME = "ProjectHandler";
@@ -12,6 +17,8 @@ public class Constants {
     public static final String KEY_FORMULAIRE_ID = "FormulaireId";
     public static final String KEY_VALEUR = "Valeur";
     public static final String KEY_QUESTION_ID = "QuestionId";
+    public static final String KEY_QUESTION_NAME = "QuestionName";
+    public static final String KEY_QUESTION_DESCRIPTION = "QuestionDescription";
     public static final String KEY_REFERENCE_ID = "ReferenceId";
     public static final String KEY_CODE = "Code";
     public static final String KEY_TEXTE = "Texte";

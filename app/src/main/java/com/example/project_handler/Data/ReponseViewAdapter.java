@@ -62,6 +62,7 @@ public class ReponseViewAdapter extends BaseAdapter {
         View formView = mInflater.inflate(R.layout.reponses_by_question_ticket, viewGroup, false);
         final ReponsesByFormulaire reponse = listeReponses.get(i).get("Nom");
 
+        if(listeReponses.size() <= 0) return formView;
         LinearLayout m_layout = (LinearLayout)  formView.findViewById(R.id.reponseLinear);
 
 

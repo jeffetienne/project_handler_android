@@ -26,7 +26,7 @@ import java.util.ArrayList;
 public class FormulaireViewAdapter extends BaseAdapter {
 
     Context context;
-    ArrayList<Formulaire> listForm = new ArrayList<Formulaire>();
+    ArrayList<Formulaire> listForm = new ArrayList<>();
     private MainActivity activity;
 
     public FormulaireViewAdapter(ArrayList<Formulaire> listForm) {
@@ -56,9 +56,8 @@ public class FormulaireViewAdapter extends BaseAdapter {
         TextView Description;
         TextView Projet;
         ImageButton fillOut;
-        ImageButton questions;
+        ImageButton entriesInDb;
         ImageButton entries;
-        ImageButton delete;
 
 
         View formView = mInflater.inflate(R.layout.formulaire_activity, viewGroup, false);
@@ -68,9 +67,9 @@ public class FormulaireViewAdapter extends BaseAdapter {
         Description = (TextView) formView.findViewById(R.id.descriptionTextView);
         Projet = (TextView) formView.findViewById(R.id.projetTextView);
         fillOut = (ImageButton) formView.findViewById(R.id.fillOutImageButton);
-        questions = (ImageButton) formView.findViewById(R.id.detailsImageButton);
+        entriesInDb = (ImageButton) formView.findViewById(R.id.detailsImageButton);
         entries = (ImageButton) formView.findViewById(R.id.entriesImageButton);
-        delete = (ImageButton) formView.findViewById(R.id.deleteImageButton);
+        //delete = (ImageButton) formView.findViewById(R.id.deleteImageButton);
 
         Name.setText(formulaire.getName());
         Description.setText(formulaire.getDescription());
@@ -79,16 +78,16 @@ public class FormulaireViewAdapter extends BaseAdapter {
         if(i%2 == 0) {
             formView.setBackgroundColor(Color.rgb(200, 200, 200));
             fillOut.setBackgroundColor(Color.rgb(200, 200, 200));
-            questions.setBackgroundColor(Color.rgb(200, 200, 200));
+            entriesInDb.setBackgroundColor(Color.rgb(200, 200, 200));
             entries.setBackgroundColor(Color.rgb(200, 200, 200));
-            delete.setBackgroundColor(Color.rgb(200, 200, 200));
+            //delete.setBackgroundColor(Color.rgb(200, 200, 200));
         }
         if(i%2 == 1) {
             formView.setBackgroundColor(Color.rgb(240, 240, 240));
             fillOut.setBackgroundColor(Color.rgb(240, 240, 240));
-            questions.setBackgroundColor(Color.rgb(240, 240, 240));
+            entriesInDb.setBackgroundColor(Color.rgb(240, 240, 240));
             entries.setBackgroundColor(Color.rgb(240, 240, 240));
-            delete.setBackgroundColor(Color.rgb(240, 240, 240));
+            //delete.setBackgroundColor(Color.rgb(240, 240, 240));
         }
 
         fillOut.setOnClickListener(new View.OnClickListener() {
@@ -101,7 +100,7 @@ public class FormulaireViewAdapter extends BaseAdapter {
             }
         });
 
-        questions.setOnClickListener(new View.OnClickListener() {
+        entriesInDb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(viewGroup.getContext(), ReponsesInDbActivity.class);
@@ -118,13 +117,6 @@ public class FormulaireViewAdapter extends BaseAdapter {
 
                 intent.putExtra("formulaire", formulaire);
                 viewGroup.getContext().startActivity(intent);
-            }
-        });
-
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                System.out.println("Are you sure you want to delete " + formulaire.getName());
             }
         });
 

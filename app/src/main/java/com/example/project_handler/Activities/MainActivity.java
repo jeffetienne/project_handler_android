@@ -1,6 +1,7 @@
 package com.example.project_handler.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.multidex.MultiDex;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
@@ -16,6 +17,7 @@ import android.os.AsyncTask;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonArrayRequest;
@@ -27,6 +29,7 @@ import com.example.project_handler.Model.Domaine;
 import com.example.project_handler.Model.Formulaire;
 import com.example.project_handler.Model.Projet;
 import com.example.project_handler.R;
+import com.example.project_handler.Utils.Constants;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,7 +42,6 @@ import java.sql.Ref;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-
     private Button callApiButton;
     private TextView nameTextView;
     private TextView projetListTextView;
@@ -53,14 +55,15 @@ public class MainActivity extends AppCompatActivity {
 
     ArrayList<Formulaire> liste = new ArrayList<Formulaire>();
 
-
-
-    private final static String url = "http://192.168.0.165:26922/api/projet";
-    private final static String urlForm = "http://192.168.0.165:26922/api/formulaire";
-
     final ArrayList<Formulaire> formulaires = new ArrayList<Formulaire>();
 
     DatabaseHandler databaseHandler;
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +95,8 @@ public class MainActivity extends AppCompatActivity {
         projetRecyclerViewAdapter.notifyDataSetChanged();*/
 
 
-        //new MyAsyncTask().execute(urlForm);
+        //new MyAsyncTask().execute(Constants.URL_FORMULAIRE);
+
         getFormulaires();
 
         //getProjets();
@@ -102,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
     public ArrayList<Projet> getProjets(){
         final ArrayList<Projet> projets = new ArrayList<Projet>();
         final RequestQueue queue = Volley.newRequestQueue(this);
-        JsonArrayRequest arrayRequest = new JsonArrayRequest(url,
+        JsonArrayRequest arrayRequest = new JsonArrayRequest(Constants.URL_PROJET,
                 new Response.Listener<JSONArray>(){
                     @Override
                     public void onResponse(JSONArray response) {
@@ -248,10 +252,14 @@ public class MainActivity extends AppCompatActivity {
     public void getFormulaires(){
         final ArrayList<Formulaire> formulaires = new ArrayList<Formulaire>();
         final RequestQueue queue = Volley.newRequestQueue(this);
-        JsonArrayRequest arrayRequest = new JsonArrayRequest(urlForm,
+        JsonArrayRequest arrayRequest = new JsonArrayRequest(Constants.URL_FORMULAIRE,
                 new Response.Listener<JSONArray>(){
                     @Override
                     public void onResponse(JSONArray response) {
+
+                        if(response.length() <= 0){
+                            return;
+                        }
 
                         for(int i = 0; i<response.length(); i++){
                             try
@@ -282,8 +290,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                             catch (JSONException e)
                             {
-                                e.printStackTrace();
-                                //nameTextView.setText(e.getMessage());
+                                System.out.println("Erreur: " + e.getMessage());
                             }
                         }
 
@@ -303,6 +310,7 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("Erreur formulaire: " + error);
             }
         });
+
         queue.add(arrayRequest);
     }
 
@@ -317,19 +325,30 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(JSONArray response) {
                             //System.out.println("do in background");
+                            if(response.length() <= 0){
+                                return;
+                            }
+
                             for(int i = 0; i<response.length(); i++){
                                 try
                                 {
                                     JSONObject formulaireObject = response.getJSONObject(i);
+                                    JSONObject projetObject = response.getJSONObject(i).getJSONObject("Projet");
 
                                     Formulaire formulaire = new Formulaire();
-                                    Domaine domaine = new Domaine();
+                                    Projet projet = new Projet();
 
+                                    projet.setName(projetObject.getString("Name"));
+
+                                    formulaire.setId(formulaireObject.getInt("Id"));
                                     formulaire.setName(formulaireObject.getString("Name"));
                                     formulaire.setDescription(formulaireObject.getString("Description"));
+                                    formulaire.setProjet(projet);
+                                    formulaire.setCreePar(formulaireObject.getString("CreePar"));
+                                    //formulaire.setCreeLe(formulaireObject.getd("CreeLe"));
 
                                     formulaires.add(formulaire);
-                                    System.out.println("ItemCount: " + formulaires.size());
+
                                     //nameTextView.setText(projets.get(0).getName());
 
 
@@ -340,33 +359,32 @@ public class MainActivity extends AppCompatActivity {
                                 catch (JSONException e)
                                 {
                                     e.printStackTrace();
-                                    //nameTextView.setText(e.getMessage());
+                                    System.out.println("Erreur async: " + e.getMessage());
                                 }
                             }
-                            //System.out.println("ItemCount: " + formulaires.size());
-                            titreTextView = (TextView) findViewById(R.id.titreTextView);
-                            titreTextView.setText("Liste des formulaires");
-                            ListView listView = (ListView) findViewById(R.id.reponsesListView);
 
-
-                            FormulaireViewAdapter adapter = new FormulaireViewAdapter(formulaires);
-                            listView.setAdapter(adapter);
-                            adapter.notifyDataSetChanged();
                         }
                     }, new Response.ErrorListener(){
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    VolleyLog.d("Error", error.getMessage());
+                    System.out.println("Pas de reponse");
+
                 }
             });
+            queue.add(arrayRequest);
             return null;
         }
 
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
-            JSONObject projet = jsonObject;
-            //nameTextView.setText(projet.getString("Name"));
-            //descriptionTextView.setText(projet.getString("Description"));
+            titreTextView = (TextView) findViewById(R.id.titreTextView);
+            titreTextView.setText("Liste des formulaires");
+            ListView listView = (ListView) findViewById(R.id.formulaireListView);
+
+
+            FormulaireViewAdapter adapter = new FormulaireViewAdapter(formulaires);
+            listView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
         }
     }
 

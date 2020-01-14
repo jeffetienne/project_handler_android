@@ -22,8 +22,8 @@
     <ScrollView
         android:id="@+id/reponseFormScrollView"
         android:paddingTop="50dp"
-        android:layout_width="409dp"
-        android:layout_height="729dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         tools:layout_editor_absoluteX="1dp"
         tools:layout_editor_absoluteY="1dp"
         app:layout_constraintEnd_toEndOf="parent"

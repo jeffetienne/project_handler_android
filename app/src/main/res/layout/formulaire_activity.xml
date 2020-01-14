@@ -71,7 +71,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginLeft="300dp">
+        android:layout_marginLeft="250dp">
 
         <ImageButton
             android:id="@+id/fillOutImageButton"
@@ -96,13 +96,5 @@
             android:layout_weight="1"
             android:background="@android:color/white"
             app:srcCompat="@drawable/baseline_note_black_18dp" />
-
-        <ImageButton
-            android:id="@+id/deleteImageButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@android:color/white"
-            app:srcCompat="@drawable/baseline_delete_black_18dp" />
     </LinearLayout>
 </LinearLayout>
