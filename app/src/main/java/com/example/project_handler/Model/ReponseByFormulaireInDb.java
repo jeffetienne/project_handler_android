@@ -4,6 +4,7 @@ import java.util.Date;
 
 public class ReponseByFormulaireInDb {
     private int Id;
+    private int Groupe;
     private String Valeur;
     private int QuestionId;
     private String QuestionName;
@@ -16,6 +17,7 @@ public class ReponseByFormulaireInDb {
     private int ComponentId;
 
     public ReponseByFormulaireInDb(int id,
+                                   int groupe,
                                    String valeur,
                                    int questionId,
                                    String questionName,
@@ -27,6 +29,7 @@ public class ReponseByFormulaireInDb {
                                    Date creeLe,
                                    int ComponentId) {
         Id = id;
+        Groupe = groupe;
         Valeur = valeur;
         QuestionId = questionId;
         QuestionName = questionName;
@@ -47,6 +50,14 @@ public class ReponseByFormulaireInDb {
 
     public void setId(int id) {
         Id = id;
+    }
+
+    public int getGroupe() {
+        return Groupe;
+    }
+
+    public void setGroupe(int groupe) {
+        Groupe = groupe;
     }
 
     public String getValeur() {

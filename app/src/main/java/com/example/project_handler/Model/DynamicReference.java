@@ -28,6 +28,20 @@ public class DynamicReference implements Serializable {
         CreeLe = creeLe;
     }
 
+    public DynamicReference(int id,
+                            String code,
+                            String texte,
+                            int questionId,
+                            String creePar,
+                            Date creeLe) {
+        Id = id;
+        Code = code;
+        Texte = texte;
+        QuestionId = questionId;
+        CreePar = creePar;
+        CreeLe = creeLe;
+    }
+
     public DynamicReference(){}
 
     public int getId() {

@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.Nullable;
 
 import com.example.project_handler.Model.Component;
+import com.example.project_handler.Model.DynamicReference;
 import com.example.project_handler.Model.Question;
 import com.example.project_handler.Model.ReponseByFormulaireInDb;
 import com.example.project_handler.Model.ReponsesByFormulaire;
@@ -38,18 +39,24 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 + Constants.KEY_QUESTION_ID + " INTEGER, " + Constants.KEY_QUESTION_NAME + " TEXT, "
                 + Constants.KEY_QUESTION_DESCRIPTION + " TEXT, " + Constants.KEY_REFERENCE_ID + " INTEGER, "
                 + Constants.KEY_CODE + " TEXT, " + Constants.KEY_TEXTE + " TEXT, "
-                + Constants.KEY_CREE_PAR + " TEXT, " + Constants.KEY_CREE_LE + " DATE, " + Constants.Q_COMPONENT_ID + " INTEGER); ";
+                + Constants.KEY_CREE_PAR + " TEXT, " + Constants.KEY_CREE_LE + " DATETIME, " + Constants.Q_COMPONENT_ID + " INTEGER);";
 
-        /*
         String CREATE_Question_TABLE = "CREATE TABLE " + Constants.TABLE_QUESTION + "("
                 + Constants.KEY_ID + " INTEGER PRIMARY KEY, " + Constants.Q_NAME + " TEXT, "
                 + Constants.Q_MESSAGE + " TEXT, " + Constants.KEY_FORMULAIRE_ID + " TEXT, "
                 + Constants.Q_COMPONENT_ID + " INTEGER, " + Constants.Q_TYPE_DONNEE_ID + " INTEGER, "
-                + Constants.Q_MINIMUM + " TEXT, " + Constants.Q_MAXIMUM + " TEXT, " + Constants.Q_REQUIRED + " BOOLEAN,"
-                + Constants.KEY_CREE_PAR + " TEXT, " + Constants.KEY_CREE_LE + " DATE, " + Constants.KEY_QUESTION_ID + " INTEGER);";*/
+                + Constants.Q_MINIMUM + " TEXT, " + Constants.Q_MAXIMUM + " TEXT, " + Constants.Q_REQUIRED + " BOOLEAN, "
+                + Constants.KEY_CREE_PAR + " TEXT, " + Constants.KEY_CREE_LE + " DATETIME, " + Constants.KEY_QUESTION_ID + " INTEGER);";
+
+        String CREATE_DynamicReference_TABLE = "CREATE TABLE " + Constants.TABLE_REFERENCE + "("
+                + Constants.KEY_ID + " INTEGER PRIMARY KEY, " + Constants.KEY_REFERENCE_ID + " INTEGER, "
+                + Constants.KEY_CODE + " TEXT, " + Constants.KEY_TEXTE + " TEXT, "
+                + Constants.KEY_QUESTION_ID + " INTEGER, "
+                + Constants.KEY_CREE_PAR + " TEXT, " + Constants.KEY_CREE_LE + " DATETIME);";
 
         sqLiteDatabase.execSQL(CREATE_ReponseByFormulaire_TABLE);
-        //sqLiteDatabase.execSQL(CREATE_Question_TABLE);
+        sqLiteDatabase.execSQL(CREATE_Question_TABLE);
+        sqLiteDatabase.execSQL(CREATE_DynamicReference_TABLE);
     }
 
     @Override
@@ -82,6 +89,95 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             sqLiteDatabase.insert(Constants.TABLE_QUESTION, null, contentValues);
             sqLiteDatabase.close();
         }*/
+    }
+
+    public void addReference(DynamicReference reference){
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+
+        DynamicReference dynamicReference = getReference(reference.getId() + "");
+        if(dynamicReference != null) return;
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(Constants.KEY_REFERENCE_ID, reference.getId());
+        contentValues.put(Constants.KEY_CODE, reference.getCode());
+        contentValues.put(Constants.KEY_TEXTE, reference.getTexte());
+        contentValues.put(Constants.KEY_QUESTION_ID, reference.getQuestionId());
+        contentValues.put(Constants.KEY_CREE_PAR, reference.getCreePar());
+        contentValues.put(Constants.KEY_CREE_LE, reference.getCreeLe().toString());
+
+        sqLiteDatabase.insert(Constants.TABLE_REFERENCE, null, contentValues);
+        sqLiteDatabase.close();
+    }
+
+    public ArrayList<DynamicReference> getReferences(String questionId){
+        SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
+        ArrayList<DynamicReference> dynamicReferenceInDbs = new ArrayList<>();
+
+        /*
+        Cursor cursor = sqLiteDatabase.query(Constants.TABLE_NAME, new String[] {Constants.KEY_ID,
+                Constants.KEY_VALEUR, Constants.KEY_FORMULAIRE_ID, Constants.KEY_QUESTION_ID,
+                Constants.KEY_REFERENCE_ID, Constants.KEY_CODE, Constants.KEY_TEXTE,
+                Constants.KEY_CREE_PAR, Constants.KEY_CREE_LE},
+                Constants.KEY_FORMULAIRE_ID + "=?",
+                new String[]{idForm}, null, null, null, null);*/
+
+        String selectAll = "SELECT * FROM " + Constants.TABLE_REFERENCE
+                + " WHERE " + Constants.KEY_QUESTION_ID + " = " + questionId;
+
+        Cursor cursor = sqLiteDatabase.rawQuery(selectAll, null);
+
+        if(cursor.moveToFirst()){
+            do{
+                DateFormat formatter=new SimpleDateFormat("yyyyMMdd HH:mm:ss");
+                Date date = new Date();
+                try {
+                    date = formatter.parse(cursor.getString(6));
+                }catch (Exception e){
+                    System.out.println(e.getMessage());
+                }
+                DynamicReference dynamicReferenceInDb = new DynamicReference();
+                dynamicReferenceInDb.setId(Integer.parseInt(cursor.getString(1)));
+                dynamicReferenceInDb.setCode(cursor.getString(2));
+                dynamicReferenceInDb.setTexte(cursor.getString(3));
+                dynamicReferenceInDb.setQuestionId(Integer.parseInt(cursor.getString(4)));
+                dynamicReferenceInDb.setCreePar(cursor.getString(5));
+                dynamicReferenceInDb.setCreeLe(date);
+
+
+                dynamicReferenceInDbs.add(dynamicReferenceInDb);
+
+            }while (cursor.moveToNext());
+        }
+
+        return dynamicReferenceInDbs;
+    }
+
+    public DynamicReference getReference(String id){
+        SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
+
+        Cursor cursor = sqLiteDatabase.query(Constants.TABLE_REFERENCE, new String[] {Constants.KEY_ID,
+                        Constants.KEY_REFERENCE_ID, Constants.KEY_CODE, Constants.KEY_TEXTE,
+                        Constants.KEY_QUESTION_ID,  Constants.KEY_CREE_PAR, Constants.KEY_CREE_LE},
+                Constants.KEY_REFERENCE_ID + "=?",
+                new String[]{id}, null, null, null, null);
+
+        if(cursor.getCount() > 0){
+            cursor.moveToFirst();
+
+            DateFormat formatter=new SimpleDateFormat("yyyyMMdd HH:mm:ss");
+            Date date = new Date();
+            try {
+                date = formatter.parse(cursor.getString(6));
+            }catch (Exception e){
+                System.out.println(e.getMessage());
+            }
+
+            DynamicReference dynamicReference = new DynamicReference(Integer.parseInt(cursor.getString(1)), cursor.getString(2),
+                    cursor.getString(3), Integer.parseInt(cursor.getString(4)), cursor.getString(5), date);
+
+            return dynamicReference;
+        }
+        return null;
     }
 
     public Question getQuestion(String id){

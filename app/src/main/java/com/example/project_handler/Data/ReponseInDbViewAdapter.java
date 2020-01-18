@@ -22,6 +22,8 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.project_handler.Activities.MainActivity;
@@ -32,6 +34,7 @@ import com.example.project_handler.Model.ReponsesByFormulaire;
 import com.example.project_handler.R;
 import com.example.project_handler.Utils.Constants;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -114,7 +117,7 @@ public class ReponseInDbViewAdapter extends BaseAdapter {
             Valeur.setTextSize(17);
             Valeur.setTypeface(Title.getTypeface(), Typeface.ITALIC);
 
-            if (entry.getValue().getComponentId() == 2 || entry.getValue().getComponentId() == 3)
+            if (entry.getValue().getComponentId() == 2 || entry.getValue().getComponentId() == 3 || entry.getValue().getComponentId() == 4)
                 Valeur.setText(entry.getValue().getTexte());
 
             h_layout = new LinearLayout(viewGroup.getContext());
@@ -148,70 +151,103 @@ public class ReponseInDbViewAdapter extends BaseAdapter {
                 builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.dismiss();
-                        for(final Map.Entry<String, ReponseByFormulaireInDb> entry: listeReponses.get(i).entrySet()) {
-                            if(entry.getValue().getComponentId() == 1) {
-                                try {
-                                    final RequestQueue queueRep = Volley.newRequestQueue(viewGroup.getContext());
-                                    JSONObject reponseObject = new JSONObject();
-                                    reponseObject.put("QuestionId", entry.getValue().getQuestionId());
-                                    reponseObject.put("Valeur", entry.getValue().getValeur());
-                                    reponseObject.put("CreePar", "Concepteur");
-                                    Date c = Calendar.getInstance().getTime();
 
-                                    SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
-                                    String formattedDate = df.format(c);
-                                    reponseObject.put("CreeLe", formattedDate);
-                                    JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, Constants.URL_REPONSE, reponseObject, new Response.Listener<JSONObject>() {
-                                        @Override
-                                        public void onResponse(JSONObject response) {
-                                            Toast.makeText(viewGroup.getContext(),"Reponses sauvegardées avec succès!", Toast.LENGTH_LONG).show();
-                                            DatabaseHandler databaseHandler = new DatabaseHandler(viewGroup.getContext());
-                                            databaseHandler.deleteReponse(entry.getValue().getId());
-                                        }
-                                    }, new Response.ErrorListener() {
-                                        @Override
-                                        public void onErrorResponse(VolleyError error) {
-                                            System.out.println("Erreur");
-                                        }
-                                    });
-                                    queueRep.add(request);
-                                } catch (JSONException e) {
+                        final RequestQueue queueMax = Volley.newRequestQueue(viewGroup.getContext());
+                        JsonArrayRequest arrayRequestMax = new JsonArrayRequest(Constants.URL_MAX_GROUPE,
+                                new Response.Listener<JSONArray>(){
+                                    @Override
+                                    public void onResponse(JSONArray response) {
 
-                                }
+                                        if(response.length() <= 0){
+                                            return;
+                                        }
+
+                                        try {
+                                            JSONObject maxGroupeObject = response.getJSONObject(0);
+                                            int maxGroupe = maxGroupeObject.getInt("Groupe");
+
+                                            for(final Map.Entry<String, ReponseByFormulaireInDb> entry: listeReponses.get(i).entrySet()) {
+                                                if(entry.getValue().getComponentId() == 1 || entry.getValue().getComponentId() == 5 || entry.getValue().getComponentId() == 6) {
+                                                    try {
+                                                        final RequestQueue queueRep = Volley.newRequestQueue(viewGroup.getContext());
+                                                        JSONObject reponseObject = new JSONObject();
+                                                        reponseObject.put("QuestionId", entry.getValue().getQuestionId());
+                                                        reponseObject.put("Valeur", entry.getValue().getValeur());
+                                                        reponseObject.put("CreePar", "Concepteur");
+                                                        reponseObject.put("Groupe", maxGroupe + 1);
+                                                        Date c = Calendar.getInstance().getTime();
+
+                                                        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
+                                                        String formattedDate = df.format(c);
+                                                        reponseObject.put("CreeLe", formattedDate);
+                                                        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, Constants.URL_REPONSE, reponseObject, new Response.Listener<JSONObject>() {
+                                                            @Override
+                                                            public void onResponse(JSONObject response) {
+                                                                Toast.makeText(viewGroup.getContext(),"Reponses sauvegardées avec succès!", Toast.LENGTH_LONG).show();
+                                                                DatabaseHandler databaseHandler = new DatabaseHandler(viewGroup.getContext());
+                                                                databaseHandler.deleteReponse(entry.getValue().getId());
+                                                            }
+                                                        }, new Response.ErrorListener() {
+                                                            @Override
+                                                            public void onErrorResponse(VolleyError error) {
+                                                                System.out.println("Erreur");
+                                                            }
+                                                        });
+                                                        queueRep.add(request);
+                                                    } catch (JSONException e) {
+
+                                                    }
+                                                }
+                                                if(entry.getValue().getComponentId() == 2 || entry.getValue().getComponentId() == 3 || entry.getValue().getComponentId() == 4) {
+                                                    try {
+                                                        final RequestQueue queueRep = Volley.newRequestQueue(viewGroup.getContext());
+                                                        JSONObject reponseObject = new JSONObject();
+                                                        reponseObject.put("QuestionId", entry.getValue().getQuestionId());
+                                                        reponseObject.put("Valeur", entry.getValue().getValeur());
+                                                        reponseObject.put("Code", entry.getValue().getCode());
+                                                        reponseObject.put("Texte", entry.getValue().getTexte());
+                                                        reponseObject.put("CreePar", "Concepteur");
+                                                        reponseObject.put("Groupe", maxGroupe + 1);
+                                                        Date c = Calendar.getInstance().getTime();
+
+                                                        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
+                                                        String formattedDate = df.format(c);
+                                                        reponseObject.put("CreeLe", formattedDate);
+                                                        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, Constants.URL_REPONSE, reponseObject, new Response.Listener<JSONObject>() {
+                                                            @Override
+                                                            public void onResponse(JSONObject response) {
+                                                                Toast.makeText(viewGroup.getContext(),"Reponses sauvegardées avec succès!", Toast.LENGTH_LONG).show();
+                                                                DatabaseHandler databaseHandler = new DatabaseHandler(viewGroup.getContext());
+                                                                databaseHandler.deleteReponse(entry.getValue().getId());
+                                                            }
+                                                        }, new Response.ErrorListener() {
+                                                            @Override
+                                                            public void onErrorResponse(VolleyError error) {
+                                                                System.out.println("Erreur");
+                                                            }
+                                                        });
+                                                        queueRep.add(request);
+                                                    } catch (JSONException e) {
+
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        catch (JSONException e){
+
+                                        }
+
+
+                                    }
+                                }, new Response.ErrorListener(){
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                VolleyLog.d("Error", error.getMessage());
+                                System.out.println("Erreur formulaire: " + error);
                             }
-                            if(entry.getValue().getComponentId() == 2) {
-                                try {
-                                    final RequestQueue queueRep = Volley.newRequestQueue(viewGroup.getContext());
-                                    JSONObject reponseObject = new JSONObject();
-                                    reponseObject.put("QuestionId", entry.getValue().getQuestionId());
-                                    reponseObject.put("Valeur", entry.getValue().getValeur());
-                                    reponseObject.put("Code", entry.getValue().getCode());
-                                    reponseObject.put("Texte", entry.getValue().getTexte());
-                                    reponseObject.put("CreePar", "Concepteur");
-                                    Date c = Calendar.getInstance().getTime();
+                        });
 
-                                    SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
-                                    String formattedDate = df.format(c);
-                                    reponseObject.put("CreeLe", formattedDate);
-                                    JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, Constants.URL_REPONSE, reponseObject, new Response.Listener<JSONObject>() {
-                                        @Override
-                                        public void onResponse(JSONObject response) {
-                                            Toast.makeText(viewGroup.getContext(),"Reponses sauvegardées avec succès!", Toast.LENGTH_LONG).show();
-                                            DatabaseHandler databaseHandler = new DatabaseHandler(viewGroup.getContext());
-                                            databaseHandler.deleteReponse(entry.getValue().getId());
-                                        }
-                                    }, new Response.ErrorListener() {
-                                        @Override
-                                        public void onErrorResponse(VolleyError error) {
-                                            System.out.println("Erreur");
-                                        }
-                                    });
-                                    queueRep.add(request);
-                                } catch (JSONException e) {
-
-                                }
-                            }
-                        }
+                        queueMax.add(arrayRequestMax);
                     }
                 });
                 builder.setNegativeButton("No", new DialogInterface.OnClickListener() {

@@ -5,6 +5,7 @@ import java.util.Date;
 
 public class ReponsesByFormulaire implements Serializable {
     private int Id;
+    private int Groupe;
     private String Valeur;
     private Question Question;
     private int QuestionId;
@@ -15,6 +16,7 @@ public class ReponsesByFormulaire implements Serializable {
     private Date CreeLe;
 
     public ReponsesByFormulaire(int id,
+                                int groupe,
                                 String valeur,
                                 int questionId,
                                 int referenceId,
@@ -23,6 +25,7 @@ public class ReponsesByFormulaire implements Serializable {
                                 String creePar,
                                 Date creeLe) {
         Id = id;
+        Groupe = groupe;
         Valeur = valeur;
         QuestionId = questionId;
         ReferenceId = referenceId;
@@ -36,6 +39,14 @@ public class ReponsesByFormulaire implements Serializable {
 
     public int getId() {
         return Id;
+    }
+
+    public int getGroupe() {
+        return Groupe;
+    }
+
+    public void setGroupe(int groupe) {
+        Groupe = groupe;
     }
 
     public String getValeur() {

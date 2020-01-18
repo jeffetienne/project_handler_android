@@ -126,6 +126,7 @@ public class ReponsesByFormulaireActivity extends AppCompatActivity {
                                 reponse.setTexte(reponseObject.getString("Texte"));
                                 reponse.setCode(reponseObject.getString("Code"));
                                 reponse.setCreePar(reponseObject.getString("CreePar"));
+                                reponse.setGroupe(reponseObject.getInt("Groupe"));
 
                                 try {
                                     date = formatter.parse(reponseObject.getString("CreeLe"));
@@ -168,6 +169,8 @@ public class ReponsesByFormulaireActivity extends AppCompatActivity {
                             }
                         }
 
+                        int groupe = reponsesByFormulaire.get(0).getGroupe();
+                        int currentGroupe = 0;
 
 
 
@@ -183,13 +186,30 @@ public class ReponsesByFormulaireActivity extends AppCompatActivity {
                         int nbreQuestions = reponsesByFormulaire.size()/nombreQuestions;
 
                         for(int compteur = 0; compteur < reponsesByFormulaire.size(); compteur++){
+
+                            System.out.println("groupe: " + groupe + ", current groupe: " + currentGroupe);
+                            currentGroupe = reponsesByFormulaire.get(compteur).getGroupe();
+                            if(groupe == currentGroupe){
+                                keyValueRepHeader.put(reponsesByFormulaire.get(compteur).getQuestion().getName()+"",reponsesByFormulaire.get(compteur).getValeur());
+                                keyValueRep.put(reponsesByFormulaire.get(compteur).getQuestion().getName()+"",reponsesByFormulaire.get(compteur));
+                            }
+                            else {
+                                keyValueReponses.add(keyValueRep);
+                                keyValueRep = new HashMap<String, ReponsesByFormulaire>();
+                                groupe = currentGroupe;
+                                keyValueRepHeader.put(reponsesByFormulaire.get(compteur).getQuestion().getName()+"",reponsesByFormulaire.get(compteur).getValeur());
+                                keyValueRep.put(reponsesByFormulaire.get(compteur).getQuestion().getName()+"",reponsesByFormulaire.get(compteur));
+                            }
+
+
+                            /*
                             keyValueRepHeader.put(reponsesByFormulaire.get(compteur).getQuestion().getName()+"",reponsesByFormulaire.get(compteur).getValeur());
                             keyValueRep.put(reponsesByFormulaire.get(compteur).getQuestion().getName()+"",reponsesByFormulaire.get(compteur));
 
                             if (compteur > 0 && (compteur + 1) % nbreQuestions == 0) {
                                 keyValueReponses.add(keyValueRep);
                                 keyValueRep = new HashMap<String, ReponsesByFormulaire>();
-                            }
+                            }*/
                         }
 
 

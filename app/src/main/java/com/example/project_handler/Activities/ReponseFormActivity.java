@@ -2,17 +2,30 @@ package com.example.project_handler.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -20,6 +33,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -41,11 +55,13 @@ import com.example.project_handler.Model.ReponsesByFormulaire;
 import com.example.project_handler.Model.TypeDonnee;
 import com.example.project_handler.R;
 import com.example.project_handler.Utils.Constants;
+import com.example.project_handler.Utils.TextValidator;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,9 +69,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import me.srodrigo.androidhintspinner.HintAdapter;
 import me.srodrigo.androidhintspinner.HintSpinner;
+
+import static com.android.volley.VolleyLog.TAG;
 
 public class ReponseFormActivity extends AppCompatActivity {
 
@@ -67,12 +86,13 @@ public class ReponseFormActivity extends AppCompatActivity {
     RadioGroup radioGroup;
     ArrayList<RadioButton> radioButtons;
     ArrayList<CheckBox> checkBoxes;
+    DatePickerDialog datePicker;
     Button saveButton;
 
     String test;
 
     String[] spinnerArray;
-    HashMap<String ,String> spinnerMap = new HashMap<String, String>();
+    HashMap<String, String> spinnerMap = new HashMap<String, String>();
     ArrayList<DynamicReference> references = null;
     DatabaseHandler databaseHandler;
     Formulaire formulaire;
@@ -93,18 +113,17 @@ public class ReponseFormActivity extends AppCompatActivity {
         getQuestions(formulaire.getId() + "");
     }
 
-    private void getQuestions(final String idForm){
+    private void getQuestions(final String idForm) {
         final ArrayList<Question> questions = new ArrayList<Question>();
         final RequestQueue queue = Volley.newRequestQueue(this);
         JsonArrayRequest arrayRequest = new JsonArrayRequest(Constants.URL_QUESTION + "/" + idForm,
-                new Response.Listener<JSONArray>(){
+                new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
 
 
-                        for(int i = 0; i<response.length(); i++){
-                            try
-                            {
+                        for (int i = 0; i < response.length(); i++) {
+                            try {
                                 JSONObject questionObject = response.getJSONObject(i);
 
                                 JSONObject componentObject = response.getJSONObject(i).getJSONObject("Component");
@@ -147,25 +166,34 @@ public class ReponseFormActivity extends AppCompatActivity {
                                 //nameTextView.setText(projet.getString("Name"));
                                 //descriptionTextView.setText(projet.getString("Description"));
 
-                            }
-                            catch (JSONException e)
-                            {
+                            } catch (JSONException e) {
                                 e.printStackTrace();
                                 //nameTextView.setText(e.getMessage());
                             }
                         }
 
-                        for (int compteur = 0; compteur < questions.size(); compteur++){
-                            if(questions.get(compteur).getComponentId() == 1)
-                            {
+                        for (int compteur = 0; compteur < questions.size(); compteur++) {
+                            if (questions.get(compteur).getComponentId() == 1) {
                                 editText = new EditText(context);
                                 editText.setId(compteur);
                                 editText.setHint(questions.get(compteur).getMessage());
                                 ReponseForm.addView(editText);
+                                /*
+                                final int compt = compteur;
+                                editText.addTextChangedListener(new TextValidator(editText) {
+                                    @Override public void validate(TextView textView, String text) {
+                                        Toast.makeText(context,textView.getText(), Toast.LENGTH_LONG).show();
+                                        if(editText.getText().equals("") && questions.get(compt).getRequired() == true)
+                                        {
+
+                                            textView.setText("Ce champ est obligatoire!!!");
+                                            Toast.makeText(context,textView.getText(), Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                });*/
                             }
 
-                            if(questions.get(compteur).getComponentId() == 2)
-                            {
+                            if (questions.get(compteur).getComponentId() == 2) {
                                 combobox = new Spinner(context);
                                 combobox.setId(compteur);
 
@@ -174,8 +202,7 @@ public class ReponseFormActivity extends AppCompatActivity {
                                 getReferences(questions.get(compteur), combobox, radioGroup);
                             }
 
-                            if(questions.get(compteur).getComponentId() == 3)
-                            {
+                            if (questions.get(compteur).getComponentId() == 3) {
                                 radioGroup = new RadioGroup(context);
                                 radioButtons = new ArrayList<RadioButton>();
                                 radioGroup.setId(compteur);
@@ -191,8 +218,7 @@ public class ReponseFormActivity extends AppCompatActivity {
                                 ReponseForm.addView(radioGroup);
                             }
 
-                            if(questions.get(compteur).getComponentId() == 4)
-                            {
+                            if (questions.get(compteur).getComponentId() == 4) {
                                 checkBoxes = new ArrayList<>();
 
                                 radioGroup = new RadioGroup(context);
@@ -206,16 +232,66 @@ public class ReponseFormActivity extends AppCompatActivity {
                                 ReponseForm.addView(tv);
                                 getReferences(questions.get(compteur), combobox, radioGroup);
                                 ReponseForm.addView(radioGroup);
-
                             }
 
-                            if(questions.get(compteur).getComponentId() == 5)
-                            {
+                            if (questions.get(compteur).getComponentId() == 5) {
                                 editText = new EditText(context);
                                 editText.setId(compteur);
                                 editText.setHint(questions.get(compteur).getMessage());
                                 editText.setSingleLine(false);
                                 editText.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
+                                //editText.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+                                ReponseForm.addView(editText);
+                            }
+
+                            if (questions.get(compteur).getComponentId() == 6) {
+                                editText = new EditText(context);
+                                editText.setId(compteur);
+                                editText.setHint(questions.get(compteur).getMessage());
+                                editText.setSingleLine(false);
+                                editText.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
+                                //editText.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+                                ReponseForm.addView(editText);
+                                editText.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        final Calendar cldr = Calendar.getInstance();
+                                        int day = cldr.get(Calendar.DAY_OF_MONTH);
+                                        int month = cldr.get(Calendar.MONTH);
+                                        int year = cldr.get(Calendar.YEAR);
+                                        // date picker dialog
+                                        datePicker = new DatePickerDialog(ReponseFormActivity.this,
+                                                new DatePickerDialog.OnDateSetListener() {
+                                                    @Override
+                                                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                                                        editText.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
+                                                    }
+                                                }, year, month, day);
+                                        datePicker.show();
+                                    }
+                                });
+                            }
+
+                            if (questions.get(compteur).getComponentId() == 7) {
+                                editText = new EditText(context);
+                                editText.setId(compteur);
+                                editText.setHint(questions.get(compteur).getMessage());
+                                LocationManager locationManager = (LocationManager)
+                                        getSystemService(Context.LOCATION_SERVICE);
+                                LocationListener locationListener = new MyLocationListener();
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                    if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                        // TODO: Consider calling
+                                        //    Activity#requestPermissions
+                                        // here to request the missing permissions, and then overriding
+                                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                        //                                          int[] grantResults)
+                                        // to handle the case where the user grants the permission. See the documentation
+                                        // for Activity#requestPermissions for more details.
+                                        return;
+                                    }
+                                }
+                                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
                                 //editText.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_MULTI_LINE);
                                 ReponseForm.addView(editText);
                             }
@@ -246,9 +322,8 @@ public class ReponseFormActivity extends AppCompatActivity {
 
                                     Date c = Calendar.getInstance().getTime();
 
-                                    System.out.println("Date du jour: " + c);
                                     reponsesByFormulaire.setCreeLe(c);
-                                    if(questions.get(compteur).getComponentId() == 1) {
+                                    if(questions.get(compteur).getComponentId() == 1 || questions.get(compteur).getComponentId() == 5 || questions.get(compteur).getComponentId() == 6) {
 
                                         editText = (EditText) ReponseForm.findViewById(compteur);
                                         reponsesByFormulaire.setValeur(editText.getText().toString());
@@ -263,8 +338,55 @@ public class ReponseFormActivity extends AppCompatActivity {
                                         reponsesByFormulaire.setTexte(selectedText);
                                     }
 
-                                    if(questions.get(compteur).getComponentId() == 3){
+                                    ArrayList<DynamicReference> dynamicReferences = databaseHandler.getReferences(questions.get(compteur).getId() + "");
 
+                                    if(questions.get(compteur).getComponentId() == 3){
+                                        RadioButton radioButton;
+                                        RadioGroup radioGroup;
+
+                                        /*
+                                        radioGroup = (RadioGroup) ReponseForm.findViewById(compteur);
+
+                                        radioButton = (RadioButton) ReponseForm.findViewById(radioGroup.getCheckedRadioButtonId());
+
+                                        reponsesByFormulaire.setValeur(radioButton.getText().toString());
+                                        reponsesByFormulaire.setTexte(radioButton.getText().toString());*/
+                                        for (int i = 0; i < dynamicReferences.size(); i++){
+                                            radioButton = ReponseForm.findViewById(dynamicReferences.get(i).getId());
+                                            if (radioButton.isChecked()){
+                                                reponsesByFormulaire.setCode(dynamicReferences.get(i).getCode());
+                                                reponsesByFormulaire.setTexte(dynamicReferences.get(i).getTexte());
+                                                reponsesByFormulaire.setValeur(dynamicReferences.get(i).getCode());
+                                            }
+                                        }
+                                    }
+
+                                    if(questions.get(compteur).getComponentId() == 4){
+                                        String checkedValues = "";
+                                        String checkedText = "";
+
+
+
+
+                                        CheckBox checkBox;
+                                        for (int i = 0; i < dynamicReferences.size(); i++){
+                                            checkBox = new CheckBox(context);
+                                            checkBox = (CheckBox) ReponseForm.findViewById(dynamicReferences.get(i).getId());
+                                            if(checkBox.isChecked()){
+
+                                                if(checkedValues.isEmpty()) {
+                                                    checkedValues = dynamicReferences.get(i).getCode();
+                                                    checkedText = dynamicReferences.get(i).getTexte();
+                                                }
+                                                else {
+                                                    checkedValues += "|" + dynamicReferences.get(i).getCode();
+                                                    checkedText += "|" + dynamicReferences.get(i).getTexte();
+                                                }
+                                            }
+                                        }
+                                        reponsesByFormulaire.setValeur(checkedValues);
+                                        reponsesByFormulaire.setCode(checkedValues);
+                                        reponsesByFormulaire.setTexte(checkedText);
                                     }
 
                                     databaseHandler.addReponseByFormulaire(reponsesByFormulaire, questions.get(compteur).getFormulaire().getId() + "");
@@ -406,8 +528,12 @@ public class ReponseFormActivity extends AppCompatActivity {
                                 reference.setTexte(referenceObject.getString("Texte"));
                                 reference.setQuestionId(referenceObject.getInt("QuestionId"));
                                 reference.setQuestion(question);
+                                Date date = new Date();
+                                reference.setCreeLe(date);
 
                                 references.add(reference);
+
+                                databaseHandler.addReference(reference);
 
                                 //nameTextView.setText(projets.get(0).getName());
 
@@ -458,6 +584,7 @@ public class ReponseFormActivity extends AppCompatActivity {
                             {
                                 RadioButton radioButton = new RadioButton(context);
                                 radioButton.setText(references.get(i).getTexte());
+                                radioButton.setId(references.get(i).getId());
                                 radioGroup.addView(radioButton);
                             }
                         }
@@ -467,6 +594,7 @@ public class ReponseFormActivity extends AppCompatActivity {
                             {
                                 CheckBox checkBox = new CheckBox(context);
                                 checkBox.setText(references.get(i).getTexte());
+                                checkBox.setId(references.get(i).getId());
                                 radioGroup.addView(checkBox);
                                 //ReponseForm.addView(checkBox);
                             }
@@ -484,5 +612,50 @@ public class ReponseFormActivity extends AppCompatActivity {
         });
         queue.add(arrayRequest);
 
+    }
+
+    public class MyLocationListener implements LocationListener {
+
+        @Override
+        public void onLocationChanged(Location loc) {
+            editText.setText("");
+            //pb.setVisibility(View.INVISIBLE);
+            Toast.makeText(
+                    getBaseContext(),
+                    "Location changed: Lat: " + loc.getLatitude() + " Lng: "
+                            + loc.getLongitude(), Toast.LENGTH_SHORT).show();
+            String longitude = "Longitude: " + loc.getLongitude();
+            Log.v(TAG, longitude);
+            String latitude = "Latitude: " + loc.getLatitude();
+            Log.v(TAG, latitude);
+
+            /*------- To get city name from coordinates -------- */
+            String cityName = null;
+            Geocoder gcd = new Geocoder(getBaseContext(), Locale.getDefault());
+            List<Address> addresses;
+            try {
+                addresses = gcd.getFromLocation(loc.getLatitude(),
+                        loc.getLongitude(), 1);
+                if (addresses.size() > 0) {
+                    System.out.println(addresses.get(0).getLocality());
+                    cityName = addresses.get(0).getLocality();
+                }
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+            String s = longitude + "\n" + latitude + "\n\nMy Current City is: "
+                    + cityName;
+            editText.setText(s);
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {}
+
+        @Override
+        public void onProviderEnabled(String provider) {}
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {}
     }
 }

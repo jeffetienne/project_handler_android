@@ -5,14 +5,16 @@ import java.util.Date;
 
 public class Reponse implements Serializable {
     private int Id;
+    private int Groupe;
     private String Valeur;
     private Question Question;
     private int QuestionId;
     private String CreePar;
     private Date CreeLe;
 
-    public Reponse(int id, String valeur, com.example.project_handler.Model.Question question, int questionId, String creePar, Date creeLe) {
+    public Reponse(int id, int groupe, String valeur, com.example.project_handler.Model.Question question, int questionId, String creePar, Date creeLe) {
         Id = id;
+        Groupe = groupe;
         Valeur = valeur;
         Question = question;
         QuestionId = questionId;
@@ -22,6 +24,14 @@ public class Reponse implements Serializable {
 
     public int getId() {
         return Id;
+    }
+
+    public int getGroupe() {
+        return Groupe;
+    }
+
+    public void setGroupe(int groupe) {
+        Groupe = groupe;
     }
 
     public String getValeur() {

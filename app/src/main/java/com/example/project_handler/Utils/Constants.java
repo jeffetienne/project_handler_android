@@ -1,17 +1,21 @@
 package com.example.project_handler.Utils;
 
 public class Constants {
-    public static final String URL_PROJET = "http://localhost:26922/api/projet";
-    public final static String URL_REPONSE = "http://192.168.0.165:26922/api/reponse";
-    public final static String URL_FORMULAIRE = "http://192.168.0.165:26922/api/formulaire";
-    public final static String URL_QUESTION = "http://192.168.0.165:26922/api/questionsbyformulaire";
-    public final static String URL_REFERENCE = "http://192.168.0.165:26922/api/dynamicreferencebyquestion";
-    public final static String URL_REPONSE_FORM = "http://192.168.0.165:26922/api/reponsesbyformulaire";
+    public final static String PORT = "26922";
+    public final static String URL_SERVER = "http://192.168.128.13";
+    public static final String URL_PROJET = URL_SERVER + ":" + PORT + "/api/projet";
+    public final static String URL_REPONSE = URL_SERVER + ":" + PORT + "/api/reponse";
+    public final static String URL_FORMULAIRE = URL_SERVER + ":" + PORT + "/api/formulaire";
+    public final static String URL_QUESTION = URL_SERVER + ":" + PORT + "/api/questionsbyformulaire";
+    public final static String URL_REFERENCE = URL_SERVER + ":" + PORT + "/api/dynamicreferencebyquestion";
+    public final static String URL_REPONSE_FORM = URL_SERVER + ":" + PORT + "/api/reponsesbyformulaire";
+    public final static String URL_MAX_GROUPE = URL_SERVER + ':' + PORT + "/api/maxgroupe";
 
     public static final int DATABASE_VERSION = 1;
     public static String DATABASE_NAME = "ProjectHandler";
     public static String TABLE_NAME = "ReponseByFormulaire";
     public static String TABLE_QUESTION = "Question";
+    public static String TABLE_REFERENCE = "DynamicReference";
 
     public static final String KEY_ID = "Id";
     public static final String KEY_FORMULAIRE_ID = "FormulaireId";
@@ -24,6 +28,7 @@ public class Constants {
     public static final String KEY_TEXTE = "Texte";
     public static final String KEY_CREE_PAR = "CreePar";
     public static final String KEY_CREE_LE = "CreeLe";
+    public static final String KEY_GROUPE = "Groupe";
 
     public static final String Q_NAME = "Name";
     public static final String Q_MESSAGE = "Message";
