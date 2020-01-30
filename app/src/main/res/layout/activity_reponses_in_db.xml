@@ -2,12 +2,12 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activities.MainActivity">
+    tools:context=".Activities.ReponsesInDbActivity">
 
     <TextView
-        android:id="@+id/titreTextView"
+        android:id="@+id/titreDbTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="TextView"
@@ -20,8 +20,8 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
     <ListView
-        android:id="@+id/formulaireListView"
-        android:paddingTop="40dp"
+        android:id="@+id/reponsesInDbListView"
+        android:paddingTop="30dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:layout_editor_absoluteX="1dp"
@@ -30,21 +30,19 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
-    <!--<ScrollView
-        android:paddingTop="30dp"
-        android:layout_width="wrap_content"
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scrollbars="none"
+        android:orientation="horizontal"
+        android:id="@+id/publishLinear"
+        android:gravity="center_horizontal"
+        android:paddingBottom="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-        <TableLayout
-            android:id="@+id/tableLayoutProjet"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        </TableLayout>
+    </LinearLayout>
 
-    </ScrollView>-->
 </androidx.constraintlayout.widget.ConstraintLayout>

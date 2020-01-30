@@ -11,8 +11,14 @@ public class TypeDonnee implements Serializable {
         Name = name;
     }
 
+    public TypeDonnee(){}
+
     public int getId() {
         return Id;
+    }
+
+    public void setId(int id) {
+        Id = id;
     }
 
     public String getName() {

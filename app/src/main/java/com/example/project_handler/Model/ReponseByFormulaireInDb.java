@@ -1,44 +1,55 @@
 package com.example.project_handler.Model;
 
-import java.io.Serializable;
 import java.util.Date;
 
-public class ReponsesByFormulaire implements Serializable {
+public class ReponseByFormulaireInDb {
     private int Id;
     private int Groupe;
     private String Valeur;
-    private Question Question;
     private int QuestionId;
+    private String QuestionName;
+    private String QuestionDescription;
     private int ReferenceId;
     private String Code;
     private String Texte;
     private String CreePar;
     private Date CreeLe;
+    private int ComponentId;
 
-    public ReponsesByFormulaire(int id,
-                                int groupe,
-                                String valeur,
-                                int questionId,
-                                int referenceId,
-                                String code,
-                                String texte,
-                                String creePar,
-                                Date creeLe) {
+    public ReponseByFormulaireInDb(int id,
+                                   int groupe,
+                                   String valeur,
+                                   int questionId,
+                                   String questionName,
+                                   String questionDescription,
+                                   int referenceId,
+                                   String code,
+                                   String texte,
+                                   String creePar,
+                                   Date creeLe,
+                                   int ComponentId) {
         Id = id;
         Groupe = groupe;
         Valeur = valeur;
         QuestionId = questionId;
+        QuestionName = questionName;
+        QuestionDescription = questionDescription;
         ReferenceId = referenceId;
         Code = code;
         Texte = texte;
         CreePar = creePar;
         CreeLe = creeLe;
+        ComponentId = ComponentId;
     }
 
-    public ReponsesByFormulaire(){}
+    public ReponseByFormulaireInDb(){}
 
     public int getId() {
         return Id;
+    }
+
+    public void setId(int id) {
+        Id = id;
     }
 
     public int getGroupe() {
@@ -57,20 +68,28 @@ public class ReponsesByFormulaire implements Serializable {
         Valeur = valeur;
     }
 
-    public com.example.project_handler.Model.Question getQuestion() {
-        return Question;
-    }
-
-    public void setQuestion(com.example.project_handler.Model.Question question) {
-        Question = question;
-    }
-
     public int getQuestionId() {
         return QuestionId;
     }
 
     public void setQuestionId(int questionId) {
         QuestionId = questionId;
+    }
+
+    public String getQuestionName() {
+        return QuestionName;
+    }
+
+    public void setQuestionName(String questionName) {
+        QuestionName = questionName;
+    }
+
+    public String getQuestionDescription() {
+        return QuestionDescription;
+    }
+
+    public void setQuestionDescription(String questionDescription) {
+        QuestionDescription = questionDescription;
     }
 
     public int getReferenceId() {
@@ -111,5 +130,13 @@ public class ReponsesByFormulaire implements Serializable {
 
     public void setCreeLe(Date creeLe) {
         CreeLe = creeLe;
+    }
+
+    public int getComponentId() {
+        return ComponentId;
+    }
+
+    public void setComponentId(int componentId) {
+        ComponentId = componentId;
     }
 }

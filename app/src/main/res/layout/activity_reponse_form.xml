@@ -2,12 +2,12 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activities.MainActivity">
+    tools:context=".Activities.ReponseFormActivity">
 
     <TextView
-        android:id="@+id/titreTextView"
+        android:id="@+id/titreForm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="TextView"
@@ -19,9 +19,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <ListView
-        android:id="@+id/formulaireListView"
-        android:paddingTop="40dp"
+    <ScrollView
+        android:id="@+id/reponseFormScrollView"
+        android:paddingTop="50dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:layout_editor_absoluteX="1dp"
@@ -29,22 +29,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
-    <!--<ScrollView
-        android:paddingTop="30dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:scrollbars="none"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TableLayout
-            android:id="@+id/tableLayoutProjet"
+        <LinearLayout
+            android:id="@+id/reponseFormLinearLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        </TableLayout>
-
-    </ScrollView>-->
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
